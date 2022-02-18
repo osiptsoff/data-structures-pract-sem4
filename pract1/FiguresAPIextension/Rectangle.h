@@ -15,7 +15,6 @@ protected:
     point sw, ne;
 public:
     rectangle(point a, point b) : sw(a), ne(b) { }
-    rectangle() { shapes.push_back(this); }
     point north() const { return point((sw.x + ne.x) / 2, ne.y); }
     point south() const { return point((sw.x + ne.x) / 2, sw.y); }
     point east() const { return point(ne.x, (sw.y + ne.y) / 2); }
