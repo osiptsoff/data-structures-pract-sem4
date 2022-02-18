@@ -25,6 +25,7 @@ int main() {
 	screen_refresh();
 	
 	fig->move(20, 10);
+	fig->rotate_right();
 	screen_clear();
 	fig->draw();
 	screen_refresh();
