@@ -33,17 +33,10 @@ public:
         ne.x = sw.x + h * 2; ne.y = sw.y + w / 2;
     }
     */
-    void move(int a, int b)
-    {
-        sw.x += a; sw.y += b; ne.x += a; ne.y += b;
-    }
-    /*
-    void resize(double d)
-    {
-        ne.x = sw.x + (ne.x - sw.x) * d; ne.y = sw.y + (ne.y - sw.y) * d;
-    }
-    */
-
+    void move(int a, int b) { rectangle::move(a, b); }
+    
+    void resize(double d) {rectangle::resize(d); }
+    
     void draw()
     {
         rectangle::draw();

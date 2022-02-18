@@ -18,6 +18,16 @@ int main() {
 	auto* fig = new trapezium(point(20, 10), point(100, 30));
 	fig->draw();
 	screen_refresh();
+
+	fig->resize(0.8);
+	screen_clear();
+	fig->draw();
+	screen_refresh();
+	
+	fig->move(20, 10);
+	screen_clear();
+	fig->draw();
+	screen_refresh();
 	delete fig;
 
 	return 0;
