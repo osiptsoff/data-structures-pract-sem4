@@ -2,6 +2,7 @@
 #include "Screen.h"
 #include "Rectangle.h"
 #include "Line.h"
+#include "Trapezium.h"
 
 void up(shape& p, const shape& q) // поместить p над q
 {	
@@ -14,7 +15,7 @@ void up(shape& p, const shape& q) // поместить p над q
 int main() {
 	screen_init();
 
-	auto* fig = new rectangle(point(1, 1), point(40, 40));
+	auto* fig = new trapezium(point(20, 10), point(100, 30));
 	fig->draw();
 	screen_refresh();
 	delete fig;
