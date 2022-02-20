@@ -3,7 +3,6 @@
 #include "Screen.h"
 #include "Shape.h"
 
-
 class line : public shape {
 	/* отрезок прямой ["w", "e"].
 	   north( ) определяет точку "выше центра отрезка и так далеко
@@ -24,7 +23,5 @@ public:
 	void move(int a, int b) { w.x += a; w.y += b; e.x += a; e.y += b; }
 	void draw() { put_line(w, e); }
 	void resize(double d) // Изменение длины линии в (d) раз
-	{
-		e.x = w.x + (e.x - w.x) * d; e.y = w.y + (e.y - w.y) * d;
-	}
+	{ e.x = w.x + (e.x - w.x) * d; e.y = w.y + (e.y - w.y) * d; }
 };

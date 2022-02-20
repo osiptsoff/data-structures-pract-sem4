@@ -23,28 +23,34 @@ public:
     point seast() const { return point(ne.x, sw.y); }
     point nwest() const { return point(sw.x, ne.y); }
     point swest() const { return sw; }
-    void rotate_right() // Поворот вправо относительно se
+
+    void rotate_right() // ГЏГ®ГўГ®Г°Г®ГІ ГўГЇГ°Г ГўГ® Г®ГІГ­Г®Г±ГЁГІГҐГ«ГјГ­Г® se
     {
-        int w = ne.x - sw.x, h = ne.y - sw.y; //(учитывается масштаб по осям)
+        int w = ne.x - sw.x, h = ne.y - sw.y; //(ГіГ·ГЁГІГ»ГўГ ГҐГІГ±Гї Г¬Г Г±ГёГІГ ГЎ ГЇГ® Г®Г±ГїГ¬)
         sw.x = ne.x - h * 2; ne.y = sw.y + w / 2;
     }
-    void rotate_left() // Поворот влево относительно sw
+
+    void rotate_left() // ГЏГ®ГўГ®Г°Г®ГІ ГўГ«ГҐГўГ® Г®ГІГ­Г®Г±ГЁГІГҐГ«ГјГ­Г® sw
     {
         int w = ne.x - sw.x, h = ne.y - sw.y;
         ne.x = sw.x + h * 2; ne.y = sw.y + w / 2;
     }
+
     void move(int a, int b)
     {
         sw.x += a; sw.y += b; ne.x += a; ne.y += b;
     }
+
     void resize(double d) 
     {
         ne.x = sw.x + (ne.x - sw.x) * d; ne.y = sw.y + (ne.y - sw.y) * d;
     }
+
     void draw()
     {
-        put_line(nwest(), ne);   put_line(ne, seast());
-        put_line(seast(), sw);   put_line(sw, nwest());
+        put_line(nwest(), ne);   
+        put_line(ne, seast());
+        put_line(seast(), sw);   
+        put_line(sw, nwest());
     }
-
 };

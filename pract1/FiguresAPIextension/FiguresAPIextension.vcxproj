@@ -146,6 +146,7 @@
     <ClInclude Include="Rectangle.h" />
     <ClInclude Include="Screen.h" />
     <ClInclude Include="Shape.h" />
+    <ClInclude Include="Trapezium.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

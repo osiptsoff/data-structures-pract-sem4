@@ -6,24 +6,29 @@
 
 char screen[YMAX][XMAX];
 enum color { black = '*', white = '.' };
+
 void screen_init()
 {
 	for (auto y = 0; y < YMAX; ++y)
 		for (auto& x : screen[y])  x = white;
 }
+
 void screen_destroy()
 {
 	for (auto y = 0; y < YMAX; ++y)
 		for (auto& x : screen[y])  x = black;
 }
+
 bool on_screen(int a, int b) // проверка попадания точки на экран
 {
 	return 0 <= a && a < XMAX && 0 <= b && b < YMAX;
 }
+
 void put_point(int a, int b)
 {
 	if (on_screen(a, b)) screen[b][a] = black;
 }
+
 void put_line(int x0, int y0, int x1, int y1)
 /* Алгоритм Брезенхэма для прямой:
 рисование отрезка прямой от (x0,y0) до (x1,y1).
@@ -45,7 +50,9 @@ void put_line(int x0, int y0, int x1, int y1)
 		if (eps >= a || a < b) y0 += dy, eps -= two_a;
 	}
 }
+
 void screen_clear() { screen_init(); } //Очистка экрана
+
 void screen_refresh() // Обновление экрана
 {
 	for (int y = YMAX - 1; 0 <= y; --y) { // с верхней строки до нижней
@@ -75,18 +82,22 @@ struct shape { // Виртуальный базовый класс "фигура"
 	virtual void resize(double) = 0;    	//Изменение размера
 	virtual ~shape() { shapes.remove(this); } //Деструктор
 };
+
 std::list<shape*> shape::shapes;   // Размещение списка фигур
+
 void shape_refresh() // Перерисовка всех фигур на экране
 {
 	screen_clear();
 	for (auto p : shape::shapes) p->draw(); //Динамическое связывание!!!
 	screen_refresh();
 }
+
 class rotatable : virtual public shape { //Фигуры, пригодные к повороту 
 public:
 	virtual void rotate_left() = 0;	//Повернуть влево
 	virtual void rotate_right() = 0;	//Повернуть вправо
 };
+
 class reflectable : virtual public shape { // Фигуры, пригодные
 public:					     // к зеркальному отражению
 	virtual void flip_horisontally() = 0;	// Отразить горизонтально
