@@ -24,16 +24,13 @@ public:
     point nwest() const { return point(sw.x, ne.y); }
     point swest() const { return sw; }
 
-    point getSwest () const { return sw; }
-    point getNeast() const { return ne; }
-
-    void rotate_right() // Поворот вправо относительно se
+    void rotate_right() // ГЏГ®ГўГ®Г°Г®ГІ ГўГЇГ°Г ГўГ® Г®ГІГ­Г®Г±ГЁГІГҐГ«ГјГ­Г® se
     {
-        int w = ne.x - sw.x, h = ne.y - sw.y; //(учитывается масштаб по осям)
+        int w = ne.x - sw.x, h = ne.y - sw.y; //(ГіГ·ГЁГІГ»ГўГ ГҐГІГ±Гї Г¬Г Г±ГёГІГ ГЎ ГЇГ® Г®Г±ГїГ¬)
         sw.x = ne.x - h * 2; ne.y = sw.y + w / 2;
     }
 
-    void rotate_left() // Поворот влево относительно sw
+    void rotate_left() // ГЏГ®ГўГ®Г°Г®ГІ ГўГ«ГҐГўГ® Г®ГІГ­Г®Г±ГЁГІГҐГ«ГјГ­Г® sw
     {
         int w = ne.x - sw.x, h = ne.y - sw.y;
         ne.x = sw.x + h * 2; ne.y = sw.y + w / 2;
