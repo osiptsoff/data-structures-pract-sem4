@@ -16,22 +16,29 @@ int main() {
 	setlocale(LC_ALL, "Rus");
 	screen_init();
 
-	auto* fig = new trapezium(point(20, 10), point(100, 30), false);
-	fig->draw();
-	screen_refresh();
-
-	/*
-	fig->resize(0.8);
-	screen_clear();
+	auto* fig = new trapezium(point(20, 10), point(80, 30));
 	fig->draw();
 	screen_refresh();
 	
-	fig->move(20, 10);
 	fig->rotate_right();
 	screen_clear();
 	fig->draw();
 	screen_refresh();
-	*/
+
+	fig->rotate_right();
+	screen_clear();
+	fig->draw();
+	screen_refresh();
+
+	fig->rotate_right();
+	screen_clear();
+	fig->draw();
+	screen_refresh();
+
+	fig->rotate_right();
+	screen_clear();
+	fig->draw();
+	screen_refresh();
 
 	/* 
 	//== 1.Объявление набора фигур ==
