@@ -35,5 +35,11 @@
     <ClInclude Include="Trapezium.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="h_circle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="myshape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
