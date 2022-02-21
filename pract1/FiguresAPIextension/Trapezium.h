@@ -2,7 +2,7 @@
 
 #include "Rectangle.h"
 
-class trapezium : public rectangle, public reflectable /*public rotatable*/ {
+class trapezium : public rectangle, public reflectable {
     /*      nw ---- n ---- ne
            |                 |
           |                   |
@@ -11,54 +11,44 @@ class trapezium : public rectangle, public reflectable /*public rotatable*/ {
        |                         |
        sw --------- s --------- se */
 protected:
-    bool reflected;
+    char state;
 public:
-    trapezium(point a, point b, bool r = true) : rectangle::rectangle(a, b), reflected(r) {}
-    inline point north() const { return rectangle::north(); }
-    inline point south() const { return rectangle::south(); }
-    inline point east() const { return point(rectangle::east().x + (ne.x - sw.x) / 8, rectangle::east().y); }
-    inline point west() const { return point(rectangle::west().x + (ne.x - sw.x) / 8, rectangle::west().y); }
-    inline point neast() const { return ne; }
-    inline point seast() const { return point(rectangle::seast().x + (ne.x - sw.x) / 4, rectangle::seast().y); }
-    inline point nwest() const { return point(rectangle::nwest().x + (ne.x - sw.x) / 4, rectangle::nwest().y); }
-    inline point swest() const { return sw; }
+    trapezium(point a, point b, char st = 0) : rectangle::rectangle(a, b), state(st % 4) {}
 
-   /*void rotate_right() // ѕоворот вправо относительно se
-    {
-        int w = ne.x - sw.x, h = ne.y - sw.y; //(учитываетс€ масштаб по ос€м)
-        point c(sw.x + w/2, sw.y + h/2);
-        sw.x = ne.x - h * 2;
-        ne.y = sw.y + w / 2;
+   void rotate_right() {
+       state = ++state % 4;
+       rectangle::rotate_right();
     }
 
-    void rotate_left() // ѕоворот влево относительно sw
-    {
-        int w = ne.x - sw.x, h = ne.y - sw.y;
-        ne.x = sw.x + h * 2;
-        ne.y = sw.y + w / 2;
+    void rotate_left() {
+        state = --state % 4;
+        rectangle::rotate_left();
     }
-    */
-   
-    void flip_horisontally() { reflected = !reflected; } //отражение по горизонтали
+    
+    void flip_horisontally() { if( !(state % 2) ) state = (state + 2) % 4; }
+    void flip_vertically() { if (state % 2) state = (state + 2) % 4; };
 
-    void flip_vertically() { }; //отражение по вертикали ничего не мен€ет
+    void draw() {
+        point sideStartFir, sideStartSec, sideEndFir, sideEndSec;
 
-    void draw()
-    {
-        if (reflected) { rectangle::draw(); }
-        else
-        {
-            int h = ne.y - sw.y;
-            point _sw(sw.x, sw.y + h);
-            point _nw(nwest().x, sw.y);
-            point _ne(neast().x, sw.y);
-            point _se(seast().x, sw.y + h);
-            put_line(_sw, _nw);
-            put_line(_nw, _ne);
-            put_line(_ne, _se);
-            put_line(_se, _sw);
+        if (state % 2) {
+            sideStartFir = state == 1 ? point(ne.x, ne.y - (ne.x - sw.x) / 4) : point(nwest().x, ne.y - (ne.x - sw.x) / 4);
+            sideStartSec = state == 1 ? point(seast().x, sw.y + (ne.x - sw.x) / 4) : point(sw.x, sw.y + (ne.x - sw.x) / 4);
+            sideEndFir = state == 1 ? nwest() : ne;
+            sideEndSec = state == 1 ? sw : seast();
         }
-        put_line(sw.x, sw.y, seast().x, ne.y);
-        put_line(sw.x, ne.y, seast().x, seast().y);
+        else {
+            sideStartFir = state == 0 ? point(nwest().x + (ne.x - sw.x) / 4, ne.y) : point(sw.x + (ne.x - sw.x) / 4, sw.y);
+            sideStartSec = state == 0 ? point(ne.x - (ne.x - sw.x) / 4, ne.y) : point(seast().x - (ne.x - sw.x) / 4, sw.y);
+            sideEndFir = state == 0 ? sw : nwest();
+            sideEndSec = state == 0 ? seast() : ne;
+        }
+
+        put_line(sw, ne);
+        put_line(seast(), nwest());
+        put_line(sideStartFir, sideStartSec);
+        put_line(sideEndFir, sideEndSec);
+        put_line(sideStartFir, sideEndFir);
+        put_line(sideStartSec, sideEndSec);
     }
 };
