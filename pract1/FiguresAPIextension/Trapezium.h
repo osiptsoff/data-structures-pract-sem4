@@ -3,15 +3,16 @@
 #include "Rectangle.h"
 
 class trapezium : public rectangle, public reflectable {
-    /*      nw ---- n ---- ne
-           |                 |
-          |                   |
-         w          c          e
-        |                       |
-       |                         |
-       sw --------- s --------- se */
+    /*      --------------
+           |              |
+          |                |
+         |                  |
+        |                    |
+       |                      |
+       ------------------------*/
 protected:
     char state;
+
 public:
     trapezium(point a, point b, char st = 0) : rectangle::rectangle(a, b), state(st % 4) {}
 

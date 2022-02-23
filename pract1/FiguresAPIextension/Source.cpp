@@ -37,42 +37,19 @@ void right(shape& p, const shape& q) {
 
 int main() {
 	screen_init();
-	/*
-	auto* fig = new h_circle(point(20, 10), point(80, 30));
-	fig->draw();
-	screen_refresh();
-	
-	fig->rotate_right();
-	screen_clear();
-	fig->draw();
-	screen_refresh();
-
-	fig->rotate_right();
-	screen_clear();
-	fig->draw();
-	screen_refresh();
-
-	fig->rotate_right();
-	screen_clear();
-	fig->draw();
-	screen_refresh();
-
-	fig->rotate_right();
-	screen_clear();
-	fig->draw();
-	screen_refresh();*/
 
 	//== 1.Объявление набора фигур ==
-	rectangle hat(point(0, 0), point(10, 6));
-	line brim(point(0, 25), 17);
-	myshape face(point(15, 10), point(27, 18));
-	h_circle beard(point(40, 10), point(50, 20));
-	trapezium nose(point(40, 20), point(65, 28));
-	trapezium l_ear(point(50, 30), point(75, 38));
+	rectangle hat(point(15, 34), point(27, 40));
+	line brim(point(15, 5), 17);
+	myshape face(point(15, 12), point(27, 20));
+	h_circle beard(point(80, 10), point(92, 20));
+	trapezium nose(point(60, 18), point(85, 26));
+	trapezium l_ear(point(60, 29), point(85, 37));
 	trapezium r_ear(point(60, 40), point(85, 48));
 	shape_refresh();
 	std::cout << "=== Generated... ===\n";
 	std::cin.get(); //Смотреть исходный набор
+
 //== 2.Подготовка к сборке ==
 	hat.rotate_right();
 	double d = 2.6;
@@ -90,6 +67,7 @@ int main() {
 	shape_refresh();
 	std::cout << "=== Prepared... ===\n";
 	std::cin.get(); //Смотреть результат поворотов/отражений
+
 //== 3.Сборка изображения ==
 	//face.move(0, -10); // Лицо - в исходное положение
 	up(brim, face);
