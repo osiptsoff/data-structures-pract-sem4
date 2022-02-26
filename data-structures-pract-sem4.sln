@@ -7,6 +7,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pract1", "pract1", "{EC3B53
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FiguresAPIextension", "pract1\FiguresAPIextension\FiguresAPIextension.vcxproj", "{EC32005B-B4FD-4F97-B7B2-B01F2C159277}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Exception handling", "pract2\Exception handling\Exception handling.vcxproj", "{672F6BFF-2B90-4A22-8CEA-F52FA4F564D8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pract2", "pract2", "{5600AD22-0F19-458C-8F2B-CC3C941C4F4F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -23,12 +27,21 @@ Global
 		{EC32005B-B4FD-4F97-B7B2-B01F2C159277}.Release|x64.Build.0 = Release|x64
 		{EC32005B-B4FD-4F97-B7B2-B01F2C159277}.Release|x86.ActiveCfg = Release|Win32
 		{EC32005B-B4FD-4F97-B7B2-B01F2C159277}.Release|x86.Build.0 = Release|Win32
+		{672F6BFF-2B90-4A22-8CEA-F52FA4F564D8}.Debug|x64.ActiveCfg = Debug|x64
+		{672F6BFF-2B90-4A22-8CEA-F52FA4F564D8}.Debug|x64.Build.0 = Debug|x64
+		{672F6BFF-2B90-4A22-8CEA-F52FA4F564D8}.Debug|x86.ActiveCfg = Debug|Win32
+		{672F6BFF-2B90-4A22-8CEA-F52FA4F564D8}.Debug|x86.Build.0 = Debug|Win32
+		{672F6BFF-2B90-4A22-8CEA-F52FA4F564D8}.Release|x64.ActiveCfg = Release|x64
+		{672F6BFF-2B90-4A22-8CEA-F52FA4F564D8}.Release|x64.Build.0 = Release|x64
+		{672F6BFF-2B90-4A22-8CEA-F52FA4F564D8}.Release|x86.ActiveCfg = Release|Win32
+		{672F6BFF-2B90-4A22-8CEA-F52FA4F564D8}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EC32005B-B4FD-4F97-B7B2-B01F2C159277} = {EC3B5332-F4B3-4ACD-B814-F563F75F1ADD}
+		{672F6BFF-2B90-4A22-8CEA-F52FA4F564D8} = {5600AD22-0F19-458C-8F2B-CC3C941C4F4F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3A704FB8-C8BA-4899-9D40-A6B142B7FFAB}
