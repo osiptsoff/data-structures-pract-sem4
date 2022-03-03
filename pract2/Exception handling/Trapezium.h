@@ -25,6 +25,13 @@ public:
         state = --state % 4;
         rectangle::rotate_left();
     }
+
+    void resize(float d) {
+        if ((ne.x - sw.x) * d < XMAX && (ne.y - sw.y) * d < YMAX)
+            rectangle::resize(d);
+        else
+            std::cout << "\nFigure would not have suited the screen after resize. Resize denied.\n";
+    }
     
     void flip_horisontally() { if( !(state % 2) ) state = (state + 2) % 4; }
     void flip_vertically() { if (state % 2) state = (state + 2) % 4; };
@@ -56,7 +63,7 @@ public:
             this->move(-sw.x, -sw.y);
             this->draw();
             std::cout << e.what();
-            std::cout << "Figure was moved for sw to be (0; 0).\n";
+            std::cout << "\nFigure was moved for sw to be (0; 0).\n";
         }
     }
 };

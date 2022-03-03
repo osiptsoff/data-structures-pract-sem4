@@ -37,7 +37,7 @@ void put_line(int x0, int y0, int x1, int y1)
 Минимизируется величина abs(eps), где eps = 2*(b(x-x0)) + a(y-y0).  */
 {
 	if (!(on_screen(x0, y0) && on_screen(x1, y1)))
-		throw OutOfScreen("\nCannot draw the line: one of points is out of screen.\n");
+		throw OutOfScreen("Cannot draw the line: one of points is out of screen.");
 
 	int dx = 1;
 	int a = x1 - x0;   if (a < 0) dx = -1, a = -a;

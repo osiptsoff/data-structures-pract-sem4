@@ -43,6 +43,14 @@ int main() {
 	shape_refresh();
 	std::cout << "\n\nI reached this line!\n\n";
 
+	fig->resize(8);
+	shape_refresh();
+	std::cout << "\n\n";
+
+	fig->resize(1.2);
+	shape_refresh();
+	std::cout << "\n\n";
+
 	fig->rotate_right();
 	shape_refresh();
 	std::cout << "\n\n";
@@ -54,7 +62,7 @@ int main() {
 		std::cout << e.what() << std::endl;
 	}
 	shape_refresh();
-	std::cout << "\nI reached this line too!\n";
+	std::cout << "\n\nI reached this line too!\n\n";
 
 	return 0;
 }
