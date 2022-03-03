@@ -64,5 +64,6 @@ int main() {
 	shape_refresh();
 	std::cout << "\n\nI reached this line too!\n\n";
 
+	delete fig;
 	return 0;
 }
