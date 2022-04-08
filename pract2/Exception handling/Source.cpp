@@ -35,10 +35,11 @@ int main() {
 	screen_init();
 
 	try {
-		fig = SafeMakeFigure<trapezium>(point(0, 0), point(40, 40));
+		fig = SafeMakeFigure<trapezium>(point(0, 0), point(30, 30));
 	}
 	catch (OutOfScreen& e) {
 		std::cout << e.what() << std::endl;
+		fig = new trapezium(point(0, 0), point(XMAX / 5, YMAX / 5));
 	}
 	shape_refresh();
 	std::cout << "\n\nI reached this line!\n\n";
