@@ -141,6 +141,7 @@
   <ItemGroup>
     <ClInclude Include="AccessIterator.h" />
     <ClInclude Include="Node.h" />
+    <ClInclude Include="Tree.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp" />

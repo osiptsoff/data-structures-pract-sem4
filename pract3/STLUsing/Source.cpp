@@ -1,16 +1,17 @@
 #include <iostream>
 #include <vector>
 
-#include "Node.h"
-
+#include "Tree.h"
 
 int main() {
 	auto vect = std::vector<int>({5, 7, 12, 19, 24, 31, 40, 53, 68, 75, 84, 91, 102, 105, 112, 116});
-	auto vect1 = std::vector<int>({ 1, 2, 3, 4, 5, 6, 7, 8 });
-	auto foo = Node(vect1);
+	auto vect1 = std::vector<int>({ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+	auto foo = Tree(vect);
 
-	//std::cout << foo.value << " " << foo.right->value << " " << std::endl;
-	//std::cout << foo.right->value << " " << foo.right->down->value << " " << foo.right->down->right->value << std::endl;
+	for (auto element : foo)
+		std::cout << element << " ";
+
+	std::cout << "\n" << foo;
 
 	return 0;
 }
