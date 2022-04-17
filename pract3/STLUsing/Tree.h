@@ -1,9 +1,13 @@
 #pragma once
 
 #include <vector>
+#include <queue>
 
 #include "Node.h"
 #include "AccessIterator.h"
+
+using std::queue;
+using std::vector;
 
 class Tree {
 protected:
@@ -17,8 +21,29 @@ public:
 	AccessIterator end() { return AccessIterator(nullptr); };
 
 	friend std::ostream& operator<<(std::ostream& stream, const Tree& tree) {
-		//ÐÅÀËÈÇÎÂÀÒÜ
+		queue <Node*> que;
+		que.push(tree.root);
+		Node* elem;
+		int rootValue = tree.root->value;
 
+		while (!que.empty()) {
+			elem = que.front();
+			if(elem->value == rootValue) std::cout << std::endl;
+			
+			std::cout << elem->value << " ";
+			std::cout << elem->right->value << " ";
+			if (elem->right->right != nullptr) std::cout << elem->right->right->value << " ";
+			else std::cout << "@";
+			std::cout << " | ";
+			que.pop();
+
+			if (elem->down != nullptr) 
+				que.push(elem->down);
+			if (elem->right->down != nullptr)
+				que.push(elem->right->down);
+			if (elem->right->right != nullptr &&elem->right->right->down != nullptr)
+				que.push(elem->right->right->down);
+		}
 		return stream;
 	}
 };

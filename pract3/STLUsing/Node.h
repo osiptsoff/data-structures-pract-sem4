@@ -1,8 +1,8 @@
 #pragma once
 
-#include <queue>
+#include <iostream>
 
-using std::vector;
+
 
 //ƒќ–јЅќ“ј“№: добавить ссылку на родител€ дл€ доработки итератора чтени€
 class Node {
@@ -14,6 +14,7 @@ private:
 public:
 	friend class Tree;
 	friend class AccessIterator;
+	friend std::ostream& operator<<(std::ostream&, const Tree&);
 
 	Node(int _value) {
 		value = _value;
