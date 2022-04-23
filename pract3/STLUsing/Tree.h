@@ -18,7 +18,9 @@ public:
 	~Tree() { delete root; }
 
 	AccessIterator begin() { return AccessIterator(root); }
-	AccessIterator end() { return AccessIterator(nullptr); };
+	AccessIterator end() { return AccessIterator(nullptr); }
+
+	AccessIterator Insert(int, AccessIterator);
 
 	friend std::ostream& operator<<(std::ostream& stream, const Tree& tree) {
 		queue <Node*> que;
@@ -51,7 +53,7 @@ public:
 // Принимая на вход остортированный(!) вектор, эта функция строит по нему 2-3 дерево
 // этот алгоритм подробно проиллюстрирован в лекции
 Tree::Tree(const vector<int>& sequence) {
-	root = new Node(sequence[0]);
+	root = new Node(nullptr, sequence[0]);
 
 	Node* runner = root;
 	Node* upperLayerRunnerPrev = nullptr;
@@ -60,7 +62,7 @@ Tree::Tree(const vector<int>& sequence) {
 	// Создадим первый уровень: создадим для каждого элемента вектора ноду и соединим все ноды слева направо,
 	// корень - самая левая нода
 	for (int size = sequence.size(), i = 1; i < size; ++i) {
-		runner->right = new Node(sequence[i]);
+		runner->right = new Node(runner, sequence[i]);
 		runner = runner->right;
 	}
 
@@ -68,8 +70,9 @@ Tree::Tree(const vector<int>& sequence) {
 	while (root->right != nullptr && root->right->right != nullptr && root->right->right->right != nullptr) {
 		runner = root;
 		// создадим очередной уновень выше текущего, его началом сделаем корень
-		root = new Node(root->value);
+		root = new Node(nullptr, root->value);
 		root->down = runner;
+		root->down->parent = root;
 
 		upperLayerRunner = root;
 
@@ -81,8 +84,9 @@ Tree::Tree(const vector<int>& sequence) {
 			runner = runner->right;
 			++nodesWatched;
 			if (nodesWatched == 3 && runner->right != nullptr) {
-				upperLayerRunner->right = new Node(runner->right->value);
+				upperLayerRunner->right = new Node(upperLayerRunner, runner->right->value);
 				upperLayerRunner->right->down = runner->right;
+				runner->right->parent = upperLayerRunner->right;
 				runner->right = nullptr;
 				runner = upperLayerRunner->right->down;
 				upperLayerRunnerPrev = upperLayerRunner;
@@ -95,9 +99,29 @@ Tree::Tree(const vector<int>& sequence) {
 		// третью ноду из предыдущей тройки
 		if (nodesWatched == 1) {
 			upperLayerRunner->down = upperLayerRunnerPrev->down->right->right;
+			upperLayerRunnerPrev->down->right->right->parent = upperLayerRunner;
 			upperLayerRunner->value = upperLayerRunnerPrev->down->right->right->value;
 			upperLayerRunner->down->right = runner;
+			runner->parent = upperLayerRunner->down;
 			upperLayerRunnerPrev->down->right->right = nullptr;
 		}
 	}
+}
+
+AccessIterator Tree::Insert(int value, AccessIterator where) {
+	Node* runner = where.currentValue;
+	int n = 0;
+
+	while (runner->value != runner->parent->value) runner = runner->parent;
+	for(; runner->right != nullptr; runner = runner->right) n++;
+
+	if (n < 3) {
+		runner = where.currentValue;
+		Node* oldRight = runner->right;
+		runner->right = new Node(runner, runner->value);
+		runner->value = value;
+
+	}
+
+	return this->begin();
 }

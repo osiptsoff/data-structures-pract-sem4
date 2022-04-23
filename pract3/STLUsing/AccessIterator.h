@@ -13,6 +13,8 @@ protected:
 	std::queue<Node*> que;
 
 public:
+	friend class Tree;
+
 	AccessIterator(Node* _root);
 
 	bool operator==(const AccessIterator& other) { return this->currentValue == other.currentValue; }
