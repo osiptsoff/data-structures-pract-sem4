@@ -5,7 +5,7 @@
 
 //ƒќ–јЅќ“ј“№: добавить ссылку на родител€ дл€ доработки итератора чтени€
 class Node {
-private:
+public: //private:
 	int value;
 	Node* down;
 	Node* right;

@@ -14,15 +14,29 @@ protected:
 	Node* root;
 
 public:
+	Tree() : root(nullptr) {} ;
 	Tree(const vector<int>&);
-	~Tree() { delete root; }
+
+	Tree(const Tree&);
+	Tree(Tree&& other) : root(other.root) { other.root = nullptr; };
+
+	Tree& operator = (const Tree&);
+	Tree& operator = (Tree&&) noexcept;
+
+	~Tree() { delete root; };
 
 	AccessIterator begin() { return AccessIterator(root); }
 	AccessIterator end() { return AccessIterator(nullptr); }
 
+	AccessIterator begin() const { return AccessIterator(root); }
+	AccessIterator end() const { return AccessIterator(nullptr); }
+
 	AccessIterator Insert(int, AccessIterator);
 
 	friend std::ostream& operator<<(std::ostream& stream, const Tree& tree) {
+		if (tree.root == nullptr)
+			return stream;
+
 		queue <Node*> que;
 		que.push(tree.root);
 		Node* elem;
@@ -30,7 +44,7 @@ public:
 
 		while (!que.empty()) {
 			elem = que.front();
-			if(elem->value == rootValue) std::cout << std::endl;
+			if(elem->value == rootValue) std::cout << '\n';
 			
 			std::cout << elem->value << " ";
 			std::cout << elem->right->value << " ";
@@ -124,4 +138,36 @@ AccessIterator Tree::Insert(int value, AccessIterator where) {
 	}
 
 	return this->begin();
+}
+
+Tree::Tree(const Tree& other) {
+	std::vector<int> vector;
+	for (auto obj : other)
+		vector.push_back(obj);
+
+	Tree tmp = Tree(vector);
+	root = tmp.root;
+	tmp.root = nullptr;
+}
+
+Tree& Tree::operator = (const Tree& other) {
+	if (this != &other) {
+		std::vector<int> vector;
+		for (auto obj : other)
+			vector.push_back(obj);
+
+		Tree tmp = Tree(vector);
+		delete root;
+		root = tmp.root;
+		tmp.root = nullptr;
+	}
+	return *this;
+}
+
+Tree& Tree::operator = (Tree&& other) noexcept {
+	if (this != &other) {
+		root = other.root;
+		other.root = nullptr;
+	}
+	return *this;
 }
