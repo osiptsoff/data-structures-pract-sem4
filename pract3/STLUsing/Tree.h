@@ -127,23 +127,59 @@ AccessIterator Tree::insert(int value, AccessIterator where) {
 	Node* runner;
 	int n = 1;
 
-	// Высчитать, сколько чисел хранится в узле
-	while (nodeStart->parent != nullptr &&nodeStart->value != nodeStart->parent->value) nodeStart = nodeStart->parent;
-	for (runner = nodeStart; runner->right != nullptr; runner = runner->right) n++;
-
 	// Добавить вставляемый на место where, старое содержимое будет сразу после
 	runner = where.currentValue;
 	Node* oldRight = runner->right;
+
 	runner->right = new Node(runner, runner->value);
-	runner->value = value;
 	runner->right->right = oldRight;
+
+	for (; runner->parent != nullptr && runner->value == runner->parent->value; runner = runner->parent) runner->value = value;
+	runner->value = value;
+
 	if (oldRight != nullptr) oldRight->parent = runner->right;
-	if (where.currentValue == nodeStart) nodeStart->parent->value = value;
+
+	// Посчитаем, сколько чисел в узле
+	while (nodeStart->parent != nullptr && nodeStart->value != nodeStart->parent->value) nodeStart = nodeStart->parent;
+	for (runner = nodeStart; runner->right != nullptr; runner = runner->right) ++n;
 
 	// Если изначально в узле хранилось 3 числа, то сейчас их 4. Нужно перестроить дерево
-	if (n >= 3)
-		// Узел, куда осуществляется попвтка вставки - корневой
+	while (n > 3) {
 		if (nodeStart->parent == nullptr) {
+			Node* underRoot = new Node(nodeStart, nodeStart->value);
+			underRoot->down = nodeStart->down;
+			nodeStart->down = underRoot;
+
+			underRoot->right = new Node(underRoot, nodeStart->right->value);
+			underRoot->right->down = nodeStart->right->down;
+			nodeStart->right->down = nodeStart->right->right;
+			nodeStart->right->value = nodeStart->right->right->value;
+			nodeStart->right->right->parent = nodeStart->right;
+			nodeStart->right->right = nullptr;
+		}
+		else {
+			nodeStart->parent->value = nodeStart->value;
+
+			runner = nodeStart->parent;
+			oldRight = runner->right;
+			runner->right = new Node(runner, nodeStart->right->right->value);
+			runner->right->right = oldRight;
+			if (oldRight != nullptr) oldRight->parent = runner->right;
+
+			runner->right->down = nodeStart->right->right;
+			nodeStart->right->right->parent = runner->right;
+			nodeStart->right->right = nullptr;
+
+			nodeStart = nodeStart->parent;
+		}
+
+		while (nodeStart->parent != nullptr && nodeStart->value != nodeStart->parent->value) nodeStart = nodeStart->parent;
+		for (runner = nodeStart, n = 1; runner->right != nullptr; runner = runner->right) n++;
+	}
+
+
+		// Узел, куда осуществляется попвтка вставки - корневой
+		/*if (nodeStart->parent == nullptr) {
 			Node* underRoot = new Node(nodeStart, nodeStart->value);
 			underRoot->down = nodeStart->down;
 			nodeStart->down = underRoot;
@@ -159,7 +195,7 @@ AccessIterator Tree::insert(int value, AccessIterator where) {
 			nodeStart->parent->right->down = nodeStart->right->right;
 			nodeStart->right->right->parent = nodeStart->parent->right;
 			nodeStart->right->right = nullptr;
-		}
+		}*/
 
 	return where;
 }

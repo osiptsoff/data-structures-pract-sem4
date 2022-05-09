@@ -11,7 +11,6 @@ protected:
 	Node* treeRoot;
 	Node* currentValue;
 	std::queue<Node*> que;
-	AccessIterator(Node* current, int) : currentValue(current) {};
 
 public:
 	friend class Tree;
