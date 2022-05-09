@@ -18,7 +18,7 @@ public:
 	Tree(const vector<int>&);
 
 	Tree(const Tree&);
-	Tree(Tree&& other) : root(other.root) { other.root = nullptr; };
+	Tree(Tree&& other) noexcept : root(other.root) { other.root = nullptr; };
 
 	Tree& operator = (const Tree&);
 	Tree& operator = (Tree&&) noexcept;
@@ -31,7 +31,7 @@ public:
 	AccessIterator begin() const { return AccessIterator(root); }
 	AccessIterator end() const { return AccessIterator(nullptr); }
 
-	AccessIterator Insert(int, AccessIterator);
+	AccessIterator insert(int, AccessIterator);
 
 	friend std::ostream& operator<<(std::ostream& stream, const Tree& tree) {
 		if (tree.root == nullptr)
@@ -122,22 +122,46 @@ Tree::Tree(const vector<int>& sequence) {
 	}
 }
 
-AccessIterator Tree::Insert(int value, AccessIterator where) {
-	Node* runner = where.currentValue;
-	int n = 0;
+AccessIterator Tree::insert(int value, AccessIterator where) {
+	Node* nodeStart = where.currentValue;
+	Node* runner;
+	int n = 1;
 
-	while (runner->value != runner->parent->value) runner = runner->parent;
-	for(; runner->right != nullptr; runner = runner->right) n++;
+	// ¬ысчитать, сколько чисел хранитс€ в узле
+	while (nodeStart->parent != nullptr &&nodeStart->value != nodeStart->parent->value) nodeStart = nodeStart->parent;
+	for (runner = nodeStart; runner->right != nullptr; runner = runner->right) n++;
 
-	if (n < 3) {
-		runner = where.currentValue;
-		Node* oldRight = runner->right;
-		runner->right = new Node(runner, runner->value);
-		runner->value = value;
+	// ƒобавить вставл€емый на место where, старое содержимое будет сразу после
+	runner = where.currentValue;
+	Node* oldRight = runner->right;
+	runner->right = new Node(runner, runner->value);
+	runner->value = value;
+	runner->right->right = oldRight;
+	if (oldRight != nullptr) oldRight->parent = runner->right;
+	if (where.currentValue == nodeStart) nodeStart->parent->value = value;
 
-	}
+	// ≈сли изначально в узле хранилось 3 числа, то сейчас их 4. Ќужно перестроить дерево
+	if (n >= 3)
+		// ”зел, куда осуществл€етс€ попвтка вставки - корневой
+		if (nodeStart->parent == nullptr) {
+			Node* underRoot = new Node(nodeStart, nodeStart->value);
+			underRoot->down = nodeStart->down;
+			nodeStart->down = underRoot;
 
-	return this->begin();
+			underRoot->right = new Node(underRoot, nodeStart->right->value);
+			underRoot->right->down = nodeStart->right->down;
+			nodeStart->right->down = nodeStart->right->right;
+			nodeStart->right->right->parent = nodeStart->right;
+			nodeStart->right->right = nullptr;
+		}
+		else {
+			insert(nodeStart->right->right->value, AccessIterator(nodeStart->parent->right, 0));
+			nodeStart->parent->right->down = nodeStart->right->right;
+			nodeStart->right->right->parent = nodeStart->parent->right;
+			nodeStart->right->right = nullptr;
+		}
+
+	return where;
 }
 
 Tree::Tree(const Tree& other) {
