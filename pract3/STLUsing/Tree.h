@@ -133,11 +133,10 @@ AccessIterator Tree::insert(int value, AccessIterator where) {
 
 	runner->right = new Node(runner, runner->value);
 	runner->right->right = oldRight;
+	if (oldRight != nullptr) oldRight->parent = runner->right;
 
 	for (; runner->parent != nullptr && runner->value == runner->parent->value; runner = runner->parent) runner->value = value;
 	runner->value = value;
-
-	if (oldRight != nullptr) oldRight->parent = runner->right;
 
 	// Посчитаем, сколько чисел в узле
 	while (nodeStart->parent != nullptr && nodeStart->value != nodeStart->parent->value) nodeStart = nodeStart->parent;
@@ -148,10 +147,12 @@ AccessIterator Tree::insert(int value, AccessIterator where) {
 		if (nodeStart->parent == nullptr) {
 			Node* underRoot = new Node(nodeStart, nodeStart->value);
 			underRoot->down = nodeStart->down;
+			if(nodeStart->down != nullptr) nodeStart->down->parent = underRoot;
 			nodeStart->down = underRoot;
 
 			underRoot->right = new Node(underRoot, nodeStart->right->value);
 			underRoot->right->down = nodeStart->right->down;
+			if (nodeStart->right->down != nullptr) nodeStart->right->down->parent = underRoot->right;
 			nodeStart->right->down = nodeStart->right->right;
 			nodeStart->right->value = nodeStart->right->right->value;
 			nodeStart->right->right->parent = nodeStart->right;
@@ -176,27 +177,6 @@ AccessIterator Tree::insert(int value, AccessIterator where) {
 		while (nodeStart->parent != nullptr && nodeStart->value != nodeStart->parent->value) nodeStart = nodeStart->parent;
 		for (runner = nodeStart, n = 1; runner->right != nullptr; runner = runner->right) n++;
 	}
-
-
-		// Узел, куда осуществляется попвтка вставки - корневой
-		/*if (nodeStart->parent == nullptr) {
-			Node* underRoot = new Node(nodeStart, nodeStart->value);
-			underRoot->down = nodeStart->down;
-			nodeStart->down = underRoot;
-
-			underRoot->right = new Node(underRoot, nodeStart->right->value);
-			underRoot->right->down = nodeStart->right->down;
-			nodeStart->right->down = nodeStart->right->right;
-			nodeStart->right->right->parent = nodeStart->right;
-			nodeStart->right->right = nullptr;
-		}
-		else {
-			insert(nodeStart->right->right->value, AccessIterator(nodeStart->parent->right, 0));
-			nodeStart->parent->right->down = nodeStart->right->right;
-			nodeStart->right->right->parent = nodeStart->parent->right;
-			nodeStart->right->right = nullptr;
-		}*/
-
 	return where;
 }
 
