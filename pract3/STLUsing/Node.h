@@ -1,11 +1,7 @@
 #pragma once
 
-#include <iostream>
-
-
-//ƒќ–јЅќ“ј“№: добавить ссылку на родител€ дл€ доработки итератора чтени€
 class Node {
-private:
+public: //private:
 	int value;
 	Node* down;
 	Node* right;
@@ -16,6 +12,8 @@ public:
 	friend class AccessIterator;
 	friend std::ostream& operator<<(std::ostream&, const Tree&);
 
+	Node() = delete;
+	Node(const Node&) = delete;
 	Node(Node* _parent, int _value) {
 		value = _value;
 		down = nullptr;

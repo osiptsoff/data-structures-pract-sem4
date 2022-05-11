@@ -14,15 +14,29 @@ protected:
 	Node* root;
 
 public:
+	Tree() : root(nullptr) {} ;
 	Tree(const vector<int>&);
-	~Tree() { delete root; }
+
+	Tree(const Tree&);
+	Tree(Tree&& other) noexcept : root(other.root) { other.root = nullptr; };
+
+	Tree& operator = (const Tree&);
+	Tree& operator = (Tree&&) noexcept;
+
+	~Tree() { delete root; };
 
 	AccessIterator begin() { return AccessIterator(root); }
 	AccessIterator end() { return AccessIterator(nullptr); }
 
-	AccessIterator Insert(int, AccessIterator);
+	AccessIterator begin() const { return AccessIterator(root); }
+	AccessIterator end() const { return AccessIterator(nullptr); }
+
+	AccessIterator insert(int, AccessIterator);
 
 	friend std::ostream& operator<<(std::ostream& stream, const Tree& tree) {
+		if (tree.root == nullptr)
+			return stream;
+
 		queue <Node*> que;
 		que.push(tree.root);
 		Node* elem;
@@ -30,7 +44,7 @@ public:
 
 		while (!que.empty()) {
 			elem = que.front();
-			if(elem->value == rootValue) std::cout << std::endl;
+			if(elem->value == rootValue) std::cout << '\n';
 			
 			std::cout << elem->value << " ";
 			std::cout << elem->right->value << " ";
@@ -108,20 +122,92 @@ Tree::Tree(const vector<int>& sequence) {
 	}
 }
 
-AccessIterator Tree::Insert(int value, AccessIterator where) {
-	Node* runner = where.currentValue;
-	int n = 0;
+AccessIterator Tree::insert(int value, AccessIterator where) {
+	Node* nodeStart = where.currentValue;
+	Node* runner;
+	int n = 1;
 
-	while (runner->value != runner->parent->value) runner = runner->parent;
-	for(; runner->right != nullptr; runner = runner->right) n++;
+	// ƒобавить вставл€емый на место where, старое содержимое будет сразу после
+	runner = where.currentValue;
+	Node* oldRight = runner->right;
 
-	if (n < 3) {
-		runner = where.currentValue;
-		Node* oldRight = runner->right;
-		runner->right = new Node(runner, runner->value);
-		runner->value = value;
+	runner->right = new Node(runner, runner->value);
+	runner->right->right = oldRight;
+	if (oldRight != nullptr) oldRight->parent = runner->right;
 
+	for (; runner->parent != nullptr && runner->value == runner->parent->value; runner = runner->parent) runner->value = value;
+	runner->value = value;
+
+	// ѕосчитаем, сколько чисел в узле
+	while (nodeStart->parent != nullptr && nodeStart->value != nodeStart->parent->value) nodeStart = nodeStart->parent;
+	for (runner = nodeStart; runner->right != nullptr; runner = runner->right) ++n;
+
+	// ≈сли изначально в узле хранилось 3 числа, то сейчас их 4. Ќужно перестроить дерево
+	while (n > 3) {
+		if (nodeStart->parent == nullptr) {
+			Node* underRoot = new Node(nodeStart, nodeStart->value);
+			underRoot->down = nodeStart->down;
+			if(nodeStart->down != nullptr) nodeStart->down->parent = underRoot;
+			nodeStart->down = underRoot;
+
+			underRoot->right = new Node(underRoot, nodeStart->right->value);
+			underRoot->right->down = nodeStart->right->down;
+			if (nodeStart->right->down != nullptr) nodeStart->right->down->parent = underRoot->right;
+			nodeStart->right->down = nodeStart->right->right;
+			nodeStart->right->value = nodeStart->right->right->value;
+			nodeStart->right->right->parent = nodeStart->right;
+			nodeStart->right->right = nullptr;
+		}
+		else {
+			nodeStart->parent->value = nodeStart->value;
+
+			runner = nodeStart->parent;
+			oldRight = runner->right;
+			runner->right = new Node(runner, nodeStart->right->right->value);
+			runner->right->right = oldRight;
+			if (oldRight != nullptr) oldRight->parent = runner->right;
+
+			runner->right->down = nodeStart->right->right;
+			nodeStart->right->right->parent = runner->right;
+			nodeStart->right->right = nullptr;
+
+			nodeStart = nodeStart->parent;
+		}
+
+		while (nodeStart->parent != nullptr && nodeStart->value != nodeStart->parent->value) nodeStart = nodeStart->parent;
+		for (runner = nodeStart, n = 1; runner->right != nullptr; runner = runner->right) n++;
 	}
+	return where;
+}
 
-	return this->begin();
+Tree::Tree(const Tree& other) {
+	std::vector<int> vector;
+	for (auto obj : other)
+		vector.push_back(obj);
+
+	Tree tmp = Tree(vector);
+	root = tmp.root;
+	tmp.root = nullptr;
+}
+
+Tree& Tree::operator = (const Tree& other) {
+	if (this != &other) {
+		std::vector<int> vector;
+		for (auto obj : other)
+			vector.push_back(obj);
+
+		Tree tmp = Tree(vector);
+		delete root;
+		root = tmp.root;
+		tmp.root = nullptr;
+	}
+	return *this;
+}
+
+Tree& Tree::operator = (Tree&& other) noexcept {
+	if (this != &other) {
+		root = other.root;
+		other.root = nullptr;
+	}
+	return *this;
 }
