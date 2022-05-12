@@ -13,6 +13,7 @@ class Tree {
 protected:
 	Node* root;
 
+	AccessIterator insert(AccessIterator, int);
 public:
 	Tree() : root(nullptr) {} ;
 	Tree(const vector<int>&);
@@ -26,16 +27,22 @@ public:
 	~Tree() { delete root; };
 
 	AccessIterator begin() { return AccessIterator(root); }
-	AccessIterator end() { return AccessIterator(nullptr); }
+	AccessIterator end() { return AccessIterator(root, nullptr); }
 
 	AccessIterator begin() const { return AccessIterator(root); }
-	AccessIterator end() const { return AccessIterator(nullptr); }
+	AccessIterator end() const { return AccessIterator(root, nullptr); }
 
-	AccessIterator insert(int, AccessIterator);
+	AccessIterator insert(int);
+	void insert(AccessIterator); // функци€ subst
 
 	friend std::ostream& operator<<(std::ostream& stream, const Tree& tree) {
 		if (tree.root == nullptr)
 			return stream;
+
+		if (tree.root->right == nullptr) {
+			std::cout << tree.root->value << " @ @ |\n";
+			return stream;
+		}
 
 		queue <Node*> que;
 		que.push(tree.root);
@@ -122,64 +129,6 @@ Tree::Tree(const vector<int>& sequence) {
 	}
 }
 
-AccessIterator Tree::insert(int value, AccessIterator where) {
-	Node* nodeStart = where.currentValue;
-	Node* runner;
-	int n = 1;
-
-	// ƒобавить вставл€емый на место where, старое содержимое будет сразу после
-	runner = where.currentValue;
-	Node* oldRight = runner->right;
-
-	runner->right = new Node(runner, runner->value);
-	runner->right->right = oldRight;
-	if (oldRight != nullptr) oldRight->parent = runner->right;
-
-	for (; runner->parent != nullptr && runner->value == runner->parent->value; runner = runner->parent) runner->value = value;
-	runner->value = value;
-
-	// ѕосчитаем, сколько чисел в узле
-	while (nodeStart->parent != nullptr && nodeStart->value != nodeStart->parent->value) nodeStart = nodeStart->parent;
-	for (runner = nodeStart; runner->right != nullptr; runner = runner->right) ++n;
-
-	// ≈сли изначально в узле хранилось 3 числа, то сейчас их 4. Ќужно перестроить дерево
-	while (n > 3) {
-		if (nodeStart->parent == nullptr) {
-			Node* underRoot = new Node(nodeStart, nodeStart->value);
-			underRoot->down = nodeStart->down;
-			if(nodeStart->down != nullptr) nodeStart->down->parent = underRoot;
-			nodeStart->down = underRoot;
-
-			underRoot->right = new Node(underRoot, nodeStart->right->value);
-			underRoot->right->down = nodeStart->right->down;
-			if (nodeStart->right->down != nullptr) nodeStart->right->down->parent = underRoot->right;
-			nodeStart->right->down = nodeStart->right->right;
-			nodeStart->right->value = nodeStart->right->right->value;
-			nodeStart->right->right->parent = nodeStart->right;
-			nodeStart->right->right = nullptr;
-		}
-		else {
-			nodeStart->parent->value = nodeStart->value;
-
-			runner = nodeStart->parent;
-			oldRight = runner->right;
-			runner->right = new Node(runner, nodeStart->right->right->value);
-			runner->right->right = oldRight;
-			if (oldRight != nullptr) oldRight->parent = runner->right;
-
-			runner->right->down = nodeStart->right->right;
-			nodeStart->right->right->parent = runner->right;
-			nodeStart->right->right = nullptr;
-
-			nodeStart = nodeStart->parent;
-		}
-
-		while (nodeStart->parent != nullptr && nodeStart->value != nodeStart->parent->value) nodeStart = nodeStart->parent;
-		for (runner = nodeStart, n = 1; runner->right != nullptr; runner = runner->right) n++;
-	}
-	return where;
-}
-
 Tree::Tree(const Tree& other) {
 	std::vector<int> vector;
 	for (auto obj : other)
@@ -210,4 +159,107 @@ Tree& Tree::operator = (Tree&& other) noexcept {
 		other.root = nullptr;
 	}
 	return *this;
+}
+
+AccessIterator Tree::insert(AccessIterator where, int value) {
+	Node* nodeStart = where.currentValue;
+	Node* runner;
+	int n = 1;
+
+	// ≈сли where указывает на nullptr (т.е. дерево пустое или where указывает на конец данных)
+	if (where.currentValue == nullptr)
+		// ≈сли дерево пустое
+		if (where.treeRoot == nullptr) {
+			root = new Node(nullptr, value);
+
+			return --end();
+		}
+		else {
+			auto newWhere = ++insert(--where, value);
+			auto runner = newWhere.currentValue->parent;
+			for (; runner->parent != nullptr && runner->parent->value == runner->value; runner = runner->parent)
+				runner->value = newWhere.currentValue->value;
+			runner->value = newWhere.currentValue->value;
+			newWhere.currentValue->value = value;
+
+			return newWhere;
+		}
+
+	// ƒобавить вставл€емый на место where, старое содержимое будет сразу после
+	runner = where.currentValue;
+	Node* oldRight = runner->right;
+
+	runner->right = new Node(runner, runner->value);
+	runner->right->right = oldRight;
+	if (oldRight != nullptr) oldRight->parent = runner->right;
+
+	for (; runner->parent != nullptr && runner->value == runner->parent->value; runner = runner->parent) runner->value = value;
+	runner->value = value;
+
+	// ѕосчитаем, сколько чисел в узле
+	while (nodeStart->parent != nullptr && nodeStart->value != nodeStart->parent->value) nodeStart = nodeStart->parent;
+	for (runner = nodeStart; runner->right != nullptr; runner = runner->right) ++n;
+
+	// ≈сли изначально в узле хранилось 3 числа, то сейчас их 4. Ќужно перестроить дерево
+	while (n > 3) {
+		// если мы вставл€ем число в корневой узел, дерево нужно углубить
+		if (nodeStart->parent == nullptr) {
+			Node* underRoot = new Node(nodeStart, nodeStart->value);
+			underRoot->down = nodeStart->down;
+			if(nodeStart->down != nullptr) nodeStart->down->parent = underRoot;
+			nodeStart->down = underRoot;
+
+			underRoot->right = new Node(underRoot, nodeStart->right->value);
+			underRoot->right->down = nodeStart->right->down;
+			if (nodeStart->right->down != nullptr) nodeStart->right->down->parent = underRoot->right;
+			nodeStart->right->down = nodeStart->right->right;
+			nodeStart->right->value = nodeStart->right->right->value;
+			nodeStart->right->right->parent = nodeStart->right;
+			nodeStart->right->right = nullptr;
+		}
+		else {
+			nodeStart->parent->value = nodeStart->value;
+
+			runner = nodeStart->parent;
+			oldRight = runner->right;
+			runner->right = new Node(runner, nodeStart->right->right->value);
+			runner->right->right = oldRight;
+			if (oldRight != nullptr) oldRight->parent = runner->right;
+
+			runner->right->down = nodeStart->right->right;
+			nodeStart->right->right->parent = runner->right;
+			nodeStart->right->right = nullptr;
+
+			nodeStart = nodeStart->parent;
+		}
+
+		// подсчитаем количество чисел в очередном узле, чтобы пон€ть, нужна ли дальнейша€ перестройка
+		while (nodeStart->parent != nullptr && nodeStart->value != nodeStart->parent->value) nodeStart = nodeStart->parent;
+		for (runner = nodeStart, n = 1; runner->right != nullptr; runner = runner->right) n++;
+	}
+
+	// ¬ернЄм новый итератор, указывающий на ноду из where, так как дл€ навигации итератор хранит в себе
+	// структуру листьев, а она после вставки может быть изменена
+	return AccessIterator(where.treeRoot, where.currentValue);
+}
+
+// ѕри переписывании дерева в дженерик потребуетс€ передавать компаратор
+AccessIterator Tree::insert(int value) {
+	auto runner = root;
+	while (runner->down != nullptr) {
+		for (; runner->right != nullptr && runner->right->value <= value; runner = runner->right);
+		runner = runner->down;
+	}
+	for (; runner->right != nullptr && runner->value < value; runner = runner->right);
+
+	if(runner->value < value)
+		insert(++AccessIterator(root, runner), value);
+	else if(runner->value != value)
+		insert(AccessIterator(root, runner), value);
+
+	return AccessIterator(root, runner);
+}
+
+void Tree::insert(AccessIterator otherStart) { 
+	for (; otherStart.currentValue != nullptr; ++otherStart) insert(*otherStart);
 }

@@ -25,4 +25,6 @@ public:
 		delete down;
 		delete right;
 	}
+
+	Node& operator=(const Node&) = delete;
 };
