@@ -1,8 +1,6 @@
 #pragma once
 
 #include <iterator>
-#include <stack>
-#include <deque>
 
 #include "Node.h"
 
@@ -10,11 +8,8 @@ class AccessIterator : public std::iterator<std::forward_iterator_tag, int> {
 protected:
 	Node* treeRoot;
 	Node* currentValue;
-	std::deque<Node*> after;
-	std::stack<Node*> before;
 
-	AccessIterator(Node*);
-	AccessIterator(Node*, Node*);
+	AccessIterator(Node* root, Node* cValue) : treeRoot(root), currentValue(cValue) {};
 public:
 	friend class Tree;
 
@@ -34,48 +29,23 @@ public:
 	AccessIterator operator- (int);
 };
 
-// Укажет на начало
-AccessIterator::AccessIterator(Node* _root) : treeRoot(_root), currentValue(nullptr) {
-	if (_root == nullptr) return;
-
-	after.push_back(treeRoot);
-
-	// пока у последней ноды в очереди есть нижний сын, будем выполнять по дереву поиск в ширину
-	// в конце концов, в очереди останутся только самые левые ноды троек и двоек самого нижнего уровня
-	while (after.front()->down != nullptr) {
-		after.push_back(after.front()->down);
-		after.push_back(after.front()->right->down);
-		if (after.front()->right->right != nullptr)
-			after.push_back(after.front()->right->right->down);
-		after.pop_front();
-	}
-	currentValue = after.front();
-}
-
-// Укажет на переданную ноду
-AccessIterator::AccessIterator(Node* _root, Node* _currentValue) : AccessIterator(_root) {
-	for (; currentValue != _currentValue; ++(*this));
-}
-
 AccessIterator AccessIterator::operator++ () {
 	if (currentValue == nullptr)
 		throw std::out_of_range("Out of container");
 
-	// after используется, как очередь
-	// если у текущей ноды есть правый сын, следующим будет он
-	if (currentValue->right != nullptr) {
-		currentValue = currentValue->right;
-	}
-	// в другом случае, убираем её из очереди. Следующей будет нода из начала очереди
+	if (currentValue->right != nullptr) currentValue = currentValue->right;
 	else {
-		before.push(after.front());
-		after.pop_front();
+		do {
+			for (; currentValue->parent != nullptr && currentValue->parent->value != currentValue->value; currentValue = currentValue->parent);
+			currentValue = currentValue->parent;
+		} while (currentValue != nullptr && currentValue->right == nullptr);
 
-		if (after.empty())
-			currentValue = nullptr;
-		else
-			currentValue = after.front();
+		if (currentValue != nullptr) {
+			currentValue = currentValue->right;
+			for (; currentValue->down != nullptr; currentValue = currentValue->down);
+		}
 	}
+
 	return *this;
 }
 
@@ -100,24 +70,31 @@ AccessIterator AccessIterator::operator+ (int offset) {
 	return result;
 }
 
-AccessIterator AccessIterator::operator-- () {	
+AccessIterator AccessIterator::operator-- () {
 	// если дерево пустое, или итератор указывает на корень, или итератор указывает на самый левый лист
-	if (treeRoot == nullptr || currentValue != nullptr && (currentValue->parent == nullptr 
-		|| currentValue->parent->value == currentValue->value && before.empty()))
+	if (treeRoot == nullptr || currentValue != nullptr && treeRoot->value == currentValue->value)
 		throw std::out_of_range("Out of container");
 
-	// after используется, как стек
-	// если итератор указывает на конец дерева или на самое левое число в узле, 
-	// то перейти на самое правое число предыдущей ноды
-	if (currentValue == nullptr && treeRoot != nullptr || currentValue->parent->value == currentValue->value) {
-		
-		for (currentValue = before.top(); currentValue->right != nullptr; currentValue = currentValue->right);
-
-		after.push_front(before.top());
-		before.pop();
+	// если указывает на конец
+	if (currentValue == nullptr) {
+		currentValue = treeRoot;
+		while (currentValue->down != nullptr) {
+			for (; currentValue->right != nullptr; currentValue = currentValue->right);
+			currentValue = currentValue->down;
+		}
+		for (; currentValue->right != nullptr; currentValue = currentValue->right);
 	}
-	// в другом случае, перейти на число левее того, куда указывает итератор
-	else currentValue = currentValue->parent;
+	else
+		if (currentValue->parent->value != currentValue->value)
+			currentValue = currentValue->parent;
+		else {
+			for (; currentValue->parent->value == currentValue->value; currentValue = currentValue->parent);
+			currentValue = currentValue->parent;
+			while (currentValue->down != nullptr) {
+				currentValue = currentValue->down;
+				for (; currentValue->right != nullptr; currentValue = currentValue->right);
+			}
+		}
 
 	return *this;
 }

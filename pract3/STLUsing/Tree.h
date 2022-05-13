@@ -26,10 +26,18 @@ public:
 
 	~Tree() { delete root; };
 
-	AccessIterator begin() { return AccessIterator(root); }
+	AccessIterator begin() {
+		Node* first;
+		for (first = root; first != nullptr && first->down != nullptr; first = first->down);
+		return AccessIterator(root, first); 
+	}
 	AccessIterator end() { return AccessIterator(root, nullptr); }
 
-	AccessIterator begin() const { return AccessIterator(root); }
+	AccessIterator begin() const {
+		Node* first;
+		for (first = root; first != nullptr && first->down != nullptr; first = first->down);
+		return AccessIterator(root, first);
+	}
 	AccessIterator end() const { return AccessIterator(root, nullptr); }
 
 	AccessIterator insert(int);
@@ -73,7 +81,10 @@ public:
 
 // Принимая на вход остортированный(!) вектор, эта функция строит по нему 2-3 дерево
 // этот алгоритм подробно проиллюстрирован в лекции
-Tree::Tree(const vector<int>& sequence) {
+Tree::Tree(const vector<int>& sequence) : root(nullptr) {
+	if (sequence.empty())
+		return;
+
 	root = new Node(nullptr, sequence[0]);
 
 	Node* runner = root;
@@ -172,7 +183,7 @@ AccessIterator Tree::insert(AccessIterator where, int value) {
 		if (where.treeRoot == nullptr) {
 			root = new Node(nullptr, value);
 
-			return --end();
+			return AccessIterator(root, root);
 		}
 		else {
 			auto newWhere = ++insert(--where, value);
@@ -240,7 +251,7 @@ AccessIterator Tree::insert(AccessIterator where, int value) {
 
 	// Вернём новый итератор, указывающий на ноду из where, так как для навигации итератор хранит в себе
 	// структуру листьев, а она после вставки может быть изменена
-	return AccessIterator(where.treeRoot, where.currentValue);
+	return where;
 }
 
 // При переписывании дерева в дженерик потребуется передавать компаратор
@@ -253,11 +264,9 @@ AccessIterator Tree::insert(int value) {
 	for (; runner->right != nullptr && runner->value < value; runner = runner->right);
 
 	if(runner->value < value)
-		insert(++AccessIterator(root, runner), value);
+		return insert(++AccessIterator(root, runner), value);
 	else if(runner->value != value)
-		insert(AccessIterator(root, runner), value);
-
-	return AccessIterator(root, runner);
+		return insert(AccessIterator(root, runner), value);
 }
 
 void Tree::insert(AccessIterator otherStart) { 

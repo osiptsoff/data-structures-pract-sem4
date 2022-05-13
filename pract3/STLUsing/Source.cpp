@@ -4,23 +4,23 @@
 #include "Tree.h"
 
 int main() {
-	auto vect = std::vector<int>({5, 7, 12, 19, 24, 31, 40, 53, 68, 75, 84, 91, 102, 105, 112, 116});
-	auto vect1 = std::vector<int>({ 1, 35, 53, 216});
-	auto tree = Tree(vect1);
+	auto vect = std::vector<int>({ 5, 7, 12, 19, 24, 31, 40, 53, 68, 75, 84, 91 });
+	auto vect1 = std::vector<int>({5, 12, 21, 657, 11224});
+	auto tree = Tree(vect);
 
 	//Тест subst
-	std::cout << "\n" << tree << "\n\n";
+	/*std::cout << "\n" << tree << "\n\n";
 	auto ntree = Tree(vect);
 	auto treesubst = tree;
 	treesubst.insert(ntree.begin() + 3);
-	std::cout << "\n" << treesubst << "\n\n";
+	std::cout << "\n" << treesubst << "\n\n";*/
 
 	//Тест вставки
-	/*for (int i = -10; i < 100; i += 10) {
+	for (int i = -10; i <= 100; i += 10) {
 		tree.insert(i);
 		std::cout << "\n" << tree << '\n';
 	}
-	std::cout << "\n" << tree << "\n\n";*/
+	std::cout << "\n" << tree << "\n\n";
 
 	// Тест инкремента и декремена итератора
 	/*auto iter = tree.begin();
