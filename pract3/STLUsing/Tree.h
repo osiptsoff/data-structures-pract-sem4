@@ -256,6 +256,9 @@ AccessIterator Tree::insert(AccessIterator where, int value) {
 
 // При переписывании дерева в дженерик потребуется передавать компаратор
 AccessIterator Tree::insert(int value) {
+	if (root == nullptr)
+		return insert(end(), value);
+
 	auto runner = root;
 	while (runner->down != nullptr) {
 		for (; runner->right != nullptr && runner->right->value <= value; runner = runner->right);
