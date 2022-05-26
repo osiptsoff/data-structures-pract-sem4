@@ -8,6 +8,20 @@ int main() {
 	auto vect1 = std::vector<int>({5, 12, 21, 657, 11224});
 	auto tree = Tree(vect);
 
+
+	//Тест erase
+	std::cout << tree << "\n";
+	//tree.erase(tree.begin() + 13);
+	tree.erase(tree.begin() + 1);
+	std::cout << tree << "\n";
+
+	tree.erase(tree.begin() + 1);
+	std::cout << tree << "\n";
+
+	tree.erase(tree.begin() + 1);
+	std::cout << tree << "\n";
+	//for (auto i : tree) std::cout << i << ' ';
+
 	//Тест subst
 	/*std::cout << "\n" << tree << "\n\n";
 	auto ntree = Tree(vect);
@@ -34,12 +48,12 @@ int main() {
 		std::cout << *iter << " ";*/
 
 	//Тест заполнения пустого дерева
-	Tree empty;
+	/*Tree empty;
 	for (int i = 0; i < 30; ++i) {
 		std::cout << empty;
 		empty.insert(i);
 	}
-	std::cout << empty;
+	std::cout << empty;*/
 
 	//Тест вставки по значению
 
