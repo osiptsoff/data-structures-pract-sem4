@@ -12,13 +12,10 @@ int main() {
 	//Тест erase
 	std::cout << tree << "\n";
 	//tree.erase(tree.begin() + 13);
-	tree.erase(tree.begin() + 1);
-	std::cout << tree << "\n";
 
-	tree.erase(tree.begin() + 1);
-	std::cout << tree << "\n";
-
-	tree.erase(tree.begin() + 1);
+	for (; tree.begin() != tree.end(); tree.erase(tree.begin())) {
+		std::cout << tree << "\n";
+	}
 	std::cout << tree << "\n";
 	//for (auto i : tree) std::cout << i << ' ';
 
