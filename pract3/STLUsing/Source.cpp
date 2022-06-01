@@ -4,7 +4,7 @@
 #include "Tree.h"
 
 int main() {
-	auto vect = std::vector<int>({ 5, 7, 12, 19, 24, 31, 40, 53, 68, 75, 84, 91 });
+	auto vect = std::vector<int>({1, 2, 4, 5, 7, 12, 14, 17, 19, 21, 23, 24, 29, 31, 35, 37, 40, 43, 45, 48, 53, 68, 70, 73, 75, 79, 84, 87, 89, 91, 95, 98, 99 });
 	auto vect1 = std::vector<int>({5, 12, 21, 657, 11224});
 	auto tree = Tree(vect);
 
@@ -13,10 +13,22 @@ int main() {
 	std::cout << tree << "\n";
 	//tree.erase(tree.begin() + 13);
 
-	for (; tree.begin() != tree.end(); tree.erase(tree.begin())) {
+	for (; tree.begin() != tree.end(); tree.erase(tree.end() - 1)) {
 		std::cout << tree << "\n";
 	}
+
+	/*for(int i = 0; i < 7; i++) {
+		tree.erase(tree.begin());
+		std::cout << tree << "\n";
+	}*/
+	/*tree.erase(tree.end() - 5);
 	std::cout << tree << "\n";
+	tree.erase(tree.end() - 5);
+	std::cout << tree << "\n";
+	tree.erase(tree.end() - 4);
+	std::cout << tree << "\n";
+	tree.erase(tree.end() - 3);
+	std::cout << tree << "\n";*/
 	//for (auto i : tree) std::cout << i << ' ';
 
 	//Тест subst

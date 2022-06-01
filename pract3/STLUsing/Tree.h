@@ -364,29 +364,28 @@ void Tree::erase(AccessIterator where) {
 							removable->right = nullptr;
 							removable->parent->down = nullptr;
 							delete removable;
+							n = -1;
 						}
-						else {
-							if (runner->parent->parent->value == runner->parent->parent->parent->value) {
-								std::cout << "right parents+-\n";
-								if (removable->parent->parent->right) { // ѕереход к рассмотрению правых 2/3 родителей
-									runner = removable->parent->parent->right->down;
-									for (; runner->right != nullptr; runner = runner->right) ++n;
-									while (runner->value != runner->parent->value) runner = runner->parent;
-									if (n == 2) str = "r2";
-									else str = "r3";
-								}
-								else { // ѕереход к рассмотрению левых 2/3 родител€м
-									runner = removable->parent->parent->parent->down;
-									for (; runner->right != nullptr; runner = runner->right) ++n;
-									if (n == 2)	str = "l2";
-									else str = "l3";
-								}
+						else if (runner->parent->parent->value == runner->parent->parent->parent->value) {
+							std::cout << "right parents+-\n";
+							if (removable->parent->parent->right) { // ѕереход к рассмотрению правых 2/3 родителей
+								runner = removable->parent->parent->right->down;
+								for (; runner->right != nullptr; runner = runner->right) ++n;
+								while (runner->value != runner->parent->value) runner = runner->parent;
+								if (n == 2) str = "r2";
+								else str = "r3";
 							}
-						}
-					}
+							else { // ѕереход к рассмотрению левых 2/3 родител€м
+								runner = removable->parent->parent->parent->down;
+								for (; runner->right != nullptr; runner = runner->right) ++n;
+								if (n == 2)	str = "l2";
+								else str = "l3";
+							}
+						} else n = -1;
+					} else n = -1;
 				}
 				else { // —ледующа€ св€зка из трех листьев
-					std::cout << "For one son next tree nodes\n";
+					std::cout << "For one son next three nodes\n";
 					runner = runner->parent->parent;
 					runner->parent->value = runner->right->value;
 					runner->parent->down = runner->right;
@@ -394,6 +393,7 @@ void Tree::erase(AccessIterator where) {
 					removable->right = runner;
 					runner->parent = removable;
 					runner->right = nullptr;
+					n = -1;
 				}
 			}
 			else {
@@ -424,33 +424,31 @@ void Tree::erase(AccessIterator where) {
 						root->right = runner->right;
 						runner->right->parent = root;
 						root->down = nullptr;
-
 						runner->right = nullptr;
 						delete runner;
+					    n = -1;
 					}
-					else {
-						if (!runner->parent->right && runner->parent->value == runner->parent->parent->value) { // ¬ св€зке осталс€ один родитель
-							std::cout << "One parent\n";
-							n = 1;
-							removable = runner;
-							if (runner->parent->parent->right) { // ѕереход к рассмотрению правых 2/3 родителей
-								runner = runner->parent->parent->right->down;
-								for (; runner->right != nullptr; runner = runner->right) ++n;
-								while (runner->value != runner->parent->value) runner = runner->parent;
-								if (n == 2) str = "r2";
-								else str = "r3";
-							}
-							else { // ѕереход к рассмотрению левых 2/3 родител€м
-								runner = runner->parent->parent->parent->down;   
-								for (; runner->right != nullptr; runner = runner->right) ++n;
-								if (n == 2)	str = "l2";
-								else str = "l3";
-							}
+					else if (!runner->parent->right && runner->parent->value == runner->parent->parent->value) { // ¬ св€зке осталс€ один родитель
+						std::cout << "One parent\n";
+						n = 1;
+						removable = runner;
+						if (runner->parent->parent->right) { // ѕереход к рассмотрению правых 2/3 родителей
+							runner = runner->parent->parent->right->down;
+							for (; runner->right != nullptr; runner = runner->right) ++n;
+							while (runner->value != runner->parent->value) runner = runner->parent;
+							if (n == 2) str = "r2";
+							else str = "r3";
 						}
-					}
+						else { // ѕереход к рассмотрению левых 2/3 родител€м
+							runner = runner->parent->parent->parent->down;   
+							for (; runner->right != nullptr; runner = runner->right) ++n;
+							if (n == 2)	str = "l2";
+							else str = "l3";
+						}
+					} else n = -1;
 				}
 				else { // ѕредыдуща€ св€зка из трех листьев
-					std::cout << "For one son before tree nodes\n";
+					std::cout << "For one son before three nodes\n";
 					std::cout << "Rem = " << removable->value << std::endl;
 					std::cout << "Rem p = " << removable->parent->value << std::endl;
 					std::cout << "Run = " << runner->value << std::endl;
@@ -460,15 +458,20 @@ void Tree::erase(AccessIterator where) {
 					removable->parent->down = runner;
 					runner->right = removable;
 					removable->parent = runner;
+					n = -1;
 				}
 			}
 
 			do {
-				//Node* up_parent;
+				Node* up_node = nullptr;
 				// ѕерестройка по родител€м
 				if (str == "r2") {
 					std::cout << "For one parent next two parent\n";
 					Node* deleted = runner->parent;
+
+					std::cout << "Rem = " << removable->value << std::endl;
+					std::cout << "Del = " << deleted->value << std::endl;
+					std::cout << "Run = " << runner->value << std::endl;
 
 					removable->parent->parent->right = runner->parent->right;
 					if (runner->parent->right) runner->parent->right->parent = removable->parent->parent;
@@ -480,6 +483,7 @@ void Tree::erase(AccessIterator where) {
 					deleted->right = nullptr;
 					deleted->down = nullptr;
 					delete deleted;
+					n = 0;
 
 					if(removable->parent->parent == root) {
 						Node* delNode = removable->parent;
@@ -493,26 +497,28 @@ void Tree::erase(AccessIterator where) {
 						delete delNode;
 						n = -1;
 					}
-					else {
-						runner = runner->parent;
-					}
 				}
 				else if (str == "r3") {
-					std::cout << "For one parent next tree parent\n";
+					std::cout << "For one parent next three parent\n";
+					std::cout << "Rem = " << removable->value << std::endl;
+					std::cout << "Run = " << runner->value << std::endl;
+
 					runner->parent->value = runner->right->value; // ƒобавить: если больше трех уровней, значение перезаписывать в нескольких местах
+					//for (Node* rewritable = runner->parent; rewritable->parent; rewritable = rewritable->parent) rewritable->parent->value = runner->right->value;
 					runner->parent->down = runner->right;
 					runner->right->parent = runner->parent;
 					runner->right = nullptr;
 					runner->parent = removable->parent;
 					removable->parent->right = runner;
-
-					runner = runner->parent;//?
+					n = -1;
 				}
 				else if (str == "l2") {
 					std::cout << "For one parent before two parent\n";
 					Node* deleted = runner->parent->parent->right;
 					std::cout << "Rem = " << removable->value << std::endl;
+					std::cout << "Rem r = " << removable->right->value << std::endl;
 					std::cout << "Del = " << deleted->value << std::endl;
+					std::cout << "Del p = " << deleted->parent->value << std::endl;
 					std::cout << "Run = " << runner->value << std::endl;
 					removable->parent->parent = runner;
 					runner->right = removable->parent;
@@ -520,6 +526,7 @@ void Tree::erase(AccessIterator where) {
 					deleted->right = nullptr;
 					deleted->down = nullptr;
 					delete deleted;
+					n = 0;
 
 					if (runner->parent->parent == root) {
 						Node* delNode = runner->parent;
@@ -533,25 +540,80 @@ void Tree::erase(AccessIterator where) {
 						delete delNode;
 						n = -1;
 					}
-					else {
-						runner = runner->parent;//?
-					}
 				}
 				else if (str == "l3") {
-					std::cout << "For one parent before tree parent\n";
+					std::cout << "For one parent before three parent\n";
+					std::cout << "Rem = " << removable->value << std::endl;
+					std::cout << "Run = " << runner->value << std::endl;
 					removable->parent->parent->value = runner->value; // ƒобавить: если больше трех уровней, значение перезаписывать в нескольких местах
+					//for(Node* rewritable = removable->parent; rewritable->parent; rewritable = rewritable->parent) rewritable->parent->value = runner->value;
 					runner->parent->right = nullptr;
 					removable->parent->parent->down = runner;
 					runner->parent = removable->parent->parent;
 					runner->right = removable->parent;
 					removable->parent->parent = runner;
-				}
-
-				if(n != -1){
-					while (runner->parent && runner->parent->value != runner->parent->parent->value) runner = runner->parent;
-					for (; runner->right != nullptr; runner = runner->right) ++n;
+					n = -1;
 				}
 				
+				std::cout << "n =  " << n << std::endl;
+
+				if (n != -1) {
+					std::cout << "we are here " << std::endl;
+					if (str == "r2" ) up_node = runner->parent;
+					else if (str == "l2" ) up_node = removable->parent->parent;
+					while (up_node && up_node->parent && up_node->parent->parent && up_node->parent->value != up_node->parent->parent->value) up_node = up_node->parent;
+					for (; up_node->right != nullptr; up_node = up_node->right) ++n;
+					if (n == 1) {
+						runner = up_node;
+						if (!runner->parent->parent) { // root and sons
+							std::cout << "we have a root and sons\n";
+							root->right = runner->right;
+							runner->right->parent = root;
+							root->down = nullptr;
+							runner->right = nullptr;
+							delete runner;
+						} else if (!runner->parent->parent->parent) { //в св€зке осталс€ корень и нижние узлы
+							std::cout << "we have a root and sons\n";
+							runner->parent = root;
+							root->right = runner;
+							removable->right = nullptr;
+							removable->parent->down = nullptr;
+							delete removable;
+						} else if (runner->parent->parent->value == runner->parent->parent->parent->value) {
+							std::cout << "right parents big+-\n";
+							if (removable->parent->parent->right) { // ѕереход к рассмотрению правых 2/3 родителей
+								std::cout << "\nright parents+-\n";
+								runner = removable->parent->parent->right->down;
+								for (; runner->right != nullptr; runner = runner->right) ++n;
+								while (runner->value != runner->parent->value) runner = runner->parent;
+								std::cout << "Rem = " << removable->value << std::endl;
+								std::cout << "Run = " << runner->value << std::endl;
+								if (n == 2) {
+									str = "r2";
+
+								}
+								else { 
+									str = "r3"; 
+
+								}
+							}
+							else { // ѕереход к рассмотрению левых 2/3 родител€м
+								std::cout << "left parents+-\n";
+								removable = runner;
+								runner = removable->parent->parent->parent->down;
+								for (; runner->right != nullptr; runner = runner->right) ++n;
+								if (n == 2) { 
+									str = "l2";
+									//removable = runner;
+									//runner = runner->parent->parent->parent->down;
+								}
+								else {
+									str = "l3";
+								}
+							}
+						}
+					}
+				}
 			} while (n == 1);
 		}
 	}
