@@ -13,7 +13,7 @@ int main() {
 	std::cout << tree << "\n";
 	//tree.erase(tree.begin() + 13);
 
-	for (; tree.begin() != tree.end(); tree.erase(tree.begin())) {
+	for (; tree.begin() != tree.end(); tree.erase(tree.end() - 1)) {
 		std::cout << tree << "\n";
 	}
 	std::cout << tree << "\n";
