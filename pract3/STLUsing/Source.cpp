@@ -13,22 +13,12 @@ int main() {
 	std::cout << tree << "\n";
 	//tree.erase(tree.begin() + 13);
 
-	for (; tree.begin() != tree.end(); tree.erase(tree.end() - 1)) {
+	for (; tree.begin() != tree.end(); tree.erase(tree.begin())) {
 		std::cout << tree << "\n";
 	}
+	std::cout << tree << "\n";
 
-	/*for(int i = 0; i < 7; i++) {
-		tree.erase(tree.begin());
-		std::cout << tree << "\n";
-	}*/
-	/*tree.erase(tree.end() - 5);
-	std::cout << tree << "\n";
-	tree.erase(tree.end() - 5);
-	std::cout << tree << "\n";
-	tree.erase(tree.end() - 4);
-	std::cout << tree << "\n";
-	tree.erase(tree.end() - 3);
-	std::cout << tree << "\n";*/
+	
 	//for (auto i : tree) std::cout << i << ' ';
 
 	//Тест subst

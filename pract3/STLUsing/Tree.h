@@ -301,6 +301,8 @@ void Tree::erase(AccessIterator where) {
 	else {
 		Node* runner = removable;
 		int n = 1;
+		bool flag;
+
 		if (removable->parent->value == removable->value) {
 			removable->parent->down = removable->right;
 			for (; runner->parent != nullptr && runner->parent->value == removable->value; runner = runner->parent)
@@ -333,6 +335,7 @@ void Tree::erase(AccessIterator where) {
 			std::string str = "1"; // Переменная для перестройки родителей по необходимости
 			if (removable->parent && removable->parent->right) {
 				std::cout << "Go on right nodes\n";
+				flag = true;
 				runner = removable->parent->right->down; // Переход к рассмотрению правых 2/3 листов
 				std::cout << "Runner = " << runner->value << std::endl;
 				for (; runner->right != nullptr; runner = runner->right) ++n;
@@ -398,7 +401,10 @@ void Tree::erase(AccessIterator where) {
 			}
 			else {
 				std::cout << "Go on left nodes\n";
+				flag = false;
 				runner = removable->parent->parent->down; // Переход к рассмотрению левых 2/3 сыновей
+				std::cout << "Run = " << runner->value << std::endl;
+				std::cout << "Run p = " << runner->parent->value << std::endl;
 				for (; runner->right != nullptr; runner = runner->right) ++n;
 				if (n == 2) { // Предыдущая связка из двух листьев
 					std::cout << "For one son before two nodes\n";
@@ -486,6 +492,7 @@ void Tree::erase(AccessIterator where) {
 					n = 0;
 
 					if(removable->parent->parent == root) {
+						std::cout << "re with root and root down\n";
 						Node* delNode = removable->parent;
 						removable->parent = root;
 						runner->parent = root;
@@ -529,6 +536,7 @@ void Tree::erase(AccessIterator where) {
 					n = 0;
 
 					if (runner->parent->parent == root) {
+						std::cout << "re with root and root doown\n";
 						Node* delNode = runner->parent;
 						runner->parent = delNode->parent;
 						delNode->down->parent = runner->parent;
@@ -555,62 +563,196 @@ void Tree::erase(AccessIterator where) {
 					n = -1;
 				}
 				
-				std::cout << "n =  " << n << std::endl;
+				std::cout << "n = " << n << std::endl;
+				int lvl = 1;
+				for (Node* new_node = root; new_node && new_node->down; new_node = new_node->down) lvl++;
 
-				if (n != -1) {
+				if (n != -1 && lvl > 3) {
 					std::cout << "we are here " << std::endl;
-					if (str == "r2" ) up_node = runner->parent;
-					else if (str == "l2" ) up_node = removable->parent->parent;
+					std::cout << "Rem = " << removable->value << std::endl;
+					std::cout << "Rem r = " << removable->right->value << std::endl;
+					std::cout << "Run = " << runner->value << std::endl;
+					std::cout << "Run r = " << runner->right->value << std::endl;
+					
+					if (flag) {
+						if (str == "r2") up_node = removable->parent->parent; //
+						else if (str == "l2") up_node = runner->parent;
+						n = 1;
+					} else {
+						if (str == "r2" ) up_node = runner->parent;
+						else if (str == "l2" ) up_node = removable->parent->parent;
+					}
+
 					while (up_node && up_node->parent && up_node->parent->parent && up_node->parent->value != up_node->parent->parent->value) up_node = up_node->parent;
-					for (; up_node->right != nullptr; up_node = up_node->right) ++n;
+					for (; up_node && up_node->right; up_node = up_node->right) ++n;
+					std::cout << "Up_node = " << up_node->value << std::endl;
+					std::cout << "Up_node p = " << up_node->parent->value << std::endl;
+					std::cout << "Up_node p r = " << up_node->parent->right->value << std::endl;
+					std::cout << "n = " << n << std::endl;
+
 					if (n == 1) {
-						runner = up_node;
-						if (!runner->parent->parent) { // root and sons
-							std::cout << "we have a root and sons\n";
-							root->right = runner->right;
-							runner->right->parent = root;
-							root->down = nullptr;
-							runner->right = nullptr;
-							delete runner;
-						} else if (!runner->parent->parent->parent) { //в связке остался корень и нижние узлы
-							std::cout << "we have a root and sons\n";
-							runner->parent = root;
-							root->right = runner;
-							removable->right = nullptr;
-							removable->parent->down = nullptr;
-							delete removable;
-						} else if (runner->parent->parent->value == runner->parent->parent->parent->value) {
-							std::cout << "right parents big+-\n";
-							if (removable->parent->parent->right) { // Переход к рассмотрению правых 2/3 родителей
-								std::cout << "\nright parents+-\n";
+						std::cout << "we in global n == 1" << std::endl;
+						if (flag) removable = up_node;
+						else removable = up_node->parent->parent;
+
+						std::cout << "flag = " << flag << std::endl;
+
+						std::cout << "Rem = " << removable->value << std::endl;
+						//std::cout << "Rem r = " << removable->right->value << std::endl;
+						std::cout << "Run = " << runner->value << std::endl;
+
+						if (removable->parent && removable->parent->right) {
+							if (!runner->parent->parent->right) { // В связке остался один родитель
+								std::cout << "One parent\n";
+								n = 1;
+								if (!runner->parent->parent->parent) { //в связке остался корень и нижние узлы
+									std::cout << "we have a root and sons\n";
+									runner->parent = root;
+									root->right = runner;
+									removable->right = nullptr;
+									removable->parent->down = nullptr;
+									delete removable;
+									n = -1;
+								}
+								else if (runner->parent->parent->value == runner->parent->parent->parent->value) {
+									std::cout << "right parents+-\n";
+									removable = removable->down;
+									runner = runner->parent->right;
+									if (removable->parent->parent && removable->parent->parent->right) { // Переход к рассмотрению правых 2/3 родителей
+										//runner = removable->parent->parent->right->down;
+										for (; runner->right != nullptr; runner = runner->right) ++n;
+										while (runner->value != runner->parent->value) runner = runner->parent;
+										if (n == 2) str = "r2";
+										else str = "r3";
+									}
+									else { // Переход к рассмотрению левых 2/3 родителям
+										//runner = removable->parent->parent->parent->down;
+
+										for (; runner->right != nullptr; runner = runner->right) ++n;
+										if (n == 2)	str = "l2";
+										else str = "l3";
+									}
+								}
+								else n = -1;
+							}
+							else n = -1;
+						} 
+						else {
+							std::cout << "branch without rem p r " << std::endl;
+							if (flag) {
+								removable = removable->parent;
 								runner = removable->parent->parent->right->down;
-								for (; runner->right != nullptr; runner = runner->right) ++n;
-								while (runner->value != runner->parent->value) runner = runner->parent;
-								std::cout << "Rem = " << removable->value << std::endl;
+							}
+							else runner = removable->parent->parent->parent->down;
+							
+							std::cout << "Run = " << runner->value << std::endl;
+							if (!runner->parent->parent) { // root and sons
+								std::cout << "we have a root and sons\n";
 								std::cout << "Run = " << runner->value << std::endl;
-								if (n == 2) {
-									str = "r2";
+								//std::cout << "Run r = " << runner->right->value << std::endl;
+								std::cout << "Rem = " << removable->value << std::endl;
+								//std::cout << "Rem r = " << removable->right->value << std::endl;
+								n = 1;
+								for (Node* new_node = removable->parent; new_node->right != nullptr; new_node = new_node->right) ++n;
+								if (n == 1) {
+									std::cout << "we are in mini branch n == 1" << std::endl;
+									if (removable->parent->parent->right) { // ДОРАБОТКА
+										std::cout << "we are here in new  not worked branch" << std::endl;
+										if (!runner->parent->parent->right) { // В связке остался один родитель
+											std::cout << "One parent\n";
+											n = 1;
+											if (!runner->parent->parent->parent) { //в связке остался корень и нижние узлы
+												std::cout << "we have a root and sons\n";
+												runner->parent = root;
+												root->right = runner;
+												removable->right = nullptr;
+												removable->parent->down = nullptr;
+												delete removable;
+												n = -1;
+											}
+											else if (runner->parent->parent->value == runner->parent->parent->parent->value) {
+												std::cout << "right parents+-\n";
+												if (removable->parent->parent->right) { // Переход к рассмотрению правых 2/3 родителей
+													runner = removable->parent->parent->right->down;
+													for (; runner->right != nullptr; runner = runner->right) ++n;
+													while (runner->value != runner->parent->value) runner = runner->parent;
+													if (n == 2) str = "r2";
+													else str = "r3";
+												}
+												else { // Переход к рассмотрению левых 2/3 родителям
+													runner = removable->parent->parent->parent->down;
+													for (; runner->right != nullptr; runner = runner->right) ++n;
+													if (n == 2)	str = "l2";
+													else str = "l3";
+												}
+											}
+											else n = -1;
+										}
+										else n = -1;
+									}
+									else { //working
+										for (Node* new_node = runner; new_node->right != nullptr; new_node = new_node->right) ++n;
+										if (n == 2) {
+											std::cout << "re when n = 2\n";
+											Node* deleted = removable->parent->parent;
+											runner->right->right = removable->parent;
+											removable->parent->parent = runner->right;
+											if (deleted->right != nullptr) {
+												runner->parent->right = deleted->right;
+												deleted->right->parent = runner->parent;
+												deleted->right = nullptr;
+											}
+											else runner->parent->right = nullptr;
+											deleted->down = nullptr;
+											delete deleted;
+										}
+										else {
+											std::cout << "re when n = 3\n";
+											removable->parent->parent->value = runner->right->right->value;
+											runner->right->right->parent = removable->parent->parent;
+											removable->parent->parent->down = runner->right->right;
+											runner->right->right->right = removable->parent;
+											removable->parent->parent = runner->right->right;
+											runner->right->right = nullptr;
+											n = -1;
+										}
+									
+										if (n != -1) {
+											std::cout << "go to re with root\n";
+											root->right = runner->right;
+											runner->right->parent = root;
+											if (root->down->down) {
+												root->down = runner->down;
+												runner->down->parent = root;
+											}
+											else root->down = nullptr;
+											runner->right = nullptr;
+											runner->down = nullptr;
+											delete runner;
 
+											n = -1;
+										}
+										else if (!runner->parent->right && runner->parent->value == runner->parent->parent->value) { // В связке остался один родитель
+											std::cout << "One parent\n";
+											n = 1;
+											removable = runner;
+											if (runner->parent->parent->right) { // Переход к рассмотрению правых 2/3 родителей
+												runner = runner->parent->parent->right->down;
+												for (; runner->right != nullptr; runner = runner->right) ++n;
+												while (runner->value != runner->parent->value) runner = runner->parent;
+												if (n == 2) str = "r2";
+												else str = "r3";
+											}
+											else { // Переход к рассмотрению левых 2/3 родителям
+												runner = runner->parent->parent->parent->down;
+												for (; runner->right != nullptr; runner = runner->right) ++n;
+												if (n == 2)	str = "l2";
+												else str = "l3";
+											}
+										} else n = -1;
+									}
 								}
-								else { 
-									str = "r3"; 
-
-								}
-							}
-							else { // Переход к рассмотрению левых 2/3 родителям
-								std::cout << "left parents+-\n";
-								removable = runner;
-								runner = removable->parent->parent->parent->down;
-								for (; runner->right != nullptr; runner = runner->right) ++n;
-								if (n == 2) { 
-									str = "l2";
-									//removable = runner;
-									//runner = runner->parent->parent->parent->down;
-								}
-								else {
-									str = "l3";
-								}
-							}
+							}	
 						}
 					}
 				}
