@@ -41,7 +41,14 @@ public:
 	AccessIterator end() const { return AccessIterator(root, nullptr); }
 
 	AccessIterator insert(int);
-	void insert(AccessIterator); // функция subst
+	void insert(AccessIterator); // subst
+
+	void remove(AccessIterator);
+	void remove(int);
+	void remove(AccessIterator, AccessIterator); // excl
+	void remove(int, int); // erase
+
+	bool contains(int);
 
 	friend std::ostream& operator<<(std::ostream& stream, const Tree& tree) {
 		if (tree.root == nullptr)
@@ -274,4 +281,44 @@ AccessIterator Tree::insert(int value) {
 
 void Tree::insert(AccessIterator otherStart) { 
 	for (; otherStart.currentValue != nullptr; ++otherStart) insert(*otherStart);
+}
+
+void Tree::remove(AccessIterator where) {
+
+}
+
+void Tree::remove(int what) {
+
+}
+
+void Tree::remove(AccessIterator otherStart, AccessIterator otherEnd) {
+	for (auto i = *otherStart; i != *otherEnd; ++i)
+		if (contains(i)) return;
+
+	for (auto i = otherStart; i != otherEnd; ++i)
+		remove(i);
+}
+
+void Tree::remove(int from, int to) {
+	if (from < 0 || to - from < 0)
+		return;
+
+	try {
+		for (auto i = begin() + from, end = begin() + to; i != end; ++i)
+			remove(i);
+	}
+	catch (std::out_of_range e) {
+		throw e;
+	}
+}
+
+bool Tree::contains(int what) {
+	auto runner = root;
+	while (runner->down != nullptr) {
+		for (; runner->value != what && runner->right != nullptr && runner->right->value <= what; runner = runner->right);
+		runner = runner->down;
+	}
+	for (; runner->value != what && runner->right != nullptr && runner->value < what; runner = runner->right);
+
+	return runner->value == what;
 }
