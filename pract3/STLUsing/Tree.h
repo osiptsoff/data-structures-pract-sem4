@@ -283,7 +283,7 @@ void Tree::insert(AccessIterator otherStart) {
 void Tree::erase(AccessIterator where) {
 	Node* removable = where.currentValue;
 	if (!root) std::cout << "Not erase. Empty tree.\n";
-	else if (!removable) std::cout << "Not erase. Empty node.\n";
+	//else if (!removable) std::cout << "Not erase. Empty node.\n";
 	else if (removable->parent == nullptr) {
 		std::cout << "\nWork with root\n";
 
@@ -489,6 +489,8 @@ void Tree::erase(AccessIterator where) {
 						delete delNode;
 						n = -1;
 					}
+
+					if (runner->parent->parent && !runner->parent->parent->right) flag = true; // added 10/06
 				}
 				else if (str == "r3") {
 					std::cout << "For one parent next three parent\n";
@@ -527,6 +529,8 @@ void Tree::erase(AccessIterator where) {
 						delete delNode;
 						n = -1;
 					}
+
+					if (runner->parent->parent && !runner->parent->parent->right) flag = true; // added 09/06
 				}
 				else if (str == "l3") {
 					std::cout << "For one parent before three parent\n";
@@ -560,7 +564,7 @@ void Tree::erase(AccessIterator where) {
 						}
 						else if (str == "l2") {
 							up_node = removable->parent->parent;
-							//if (!up_node->parent->parent->right && up_node->value == runner->value && up_node->parent->value == up_node->parent->parent->value) up_node = up_node->parent->parent; //
+							//if (!up_node->parent->parent->right && up_node->value == runner->value && up_node->parent->value == up_node->parent->parent->value) up_node = runner->parent->parent; //
 						}
 					}
 					n = 1; //add it
@@ -698,6 +702,7 @@ void Tree::erase(AccessIterator where) {
 									removable = runner->parent->right->down->down;
 								}
 							}
+
 							if (!runner->parent->parent) { // root and sons
 								std::cout << "we have a root and sons\n";
 								n = 1; 
@@ -794,6 +799,7 @@ void Tree::erase(AccessIterator where) {
 								runner = runner->right;
 								if (removable->parent->parent->value == removable->parent->value) str = "l2";
 								else n = -1;
+								//if (removable->right->value == runner->value) runner = runner->parent->parent;//added now ???????
 							}
 							else if (!runner->right) {
 								std::cout << "my new things 3\n";

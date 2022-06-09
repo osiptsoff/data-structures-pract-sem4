@@ -17,17 +17,19 @@ int main() {
 	//tree.erase(tree.begin());
 	//std::cout << tree << "\n";
 
-	/*for (; tree.begin() != tree.end(); tree.erase(tree.begin())) {
+	/*for (int i = 0; i < 100; i++) {// 1 2 4 7   -2 4 5 9
+			tree.erase(tree.begin() + 7);  //  tree.end() - 5    tree.begin() + 7
+			std::cout << tree << "\n";
+		}*/
+
+	for (; tree.begin() != tree.end(); tree.erase(tree.end() - 1)) {
 		std::cout << tree << "\n";
-	}*/
+	}
 
 	//tree.erase(tree.begin());
 	//std::cout << tree << "\n";
 
-	for (int i = 0; i < 100; i++) {
-		tree.erase(tree.end() - 4);  //  tree.end() - 2    tree.begin() + 7
-		std::cout << tree << "\n";
-	}
+	
 	
 	//for (auto i : tree) std::cout << i << ' ';
 
