@@ -765,13 +765,14 @@ void Tree::erase(int from, int to) {
 		return;
 
 	try {
-		for (auto i = begin() + from, end = begin() + to; i != end; ++i)
-			remove(i);
+		for (auto i = begin() + from, j = begin() + to; i != j;)
+			remove(i++);
 	}
 	catch (std::out_of_range e) {
 		throw e;
 	}
 }
+
 
 bool Tree::contains(int what) {
 	auto runner = root;

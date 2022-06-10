@@ -286,6 +286,7 @@ void Tree::subst(AccessIterator otherStart) {
 
 void Tree::remove(AccessIterator where) { 
 	Node* removable = where.currentValue;
+	if (removable == nullptr) return;
 	if (removable->parent == nullptr) {
 		if (root->right) {
 			root = removable->right;
@@ -765,8 +766,8 @@ void Tree::erase(int from, int to) {
 		return;
 
 	try {
-		for (auto i = begin() + from, end = begin() + to; i != end; ++i)
-			remove(i);
+		for (auto i = begin() + from,  j = begin() + to; i != j;)
+			remove(i++);
 	}
 	catch (std::out_of_range e) {
 		throw e;
