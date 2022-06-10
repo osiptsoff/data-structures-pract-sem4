@@ -3,13 +3,12 @@
 
 #include "Tree.h"
 
-Tree generateRandomTree(int size) {
+Tree generateRandomTree(int size, int dElem) {
 	auto vect = std::vector<int>(size);
 
-	vect[0] = rand();
+	vect[0] = rand() % dElem;
 	for (int i = 1; i < size; ++i)
-		vect[i] = vect[i-1] + rand();
-	//std::sort(vect.begin(), vect.end());
+		vect[i] = vect[i - 1] + rand() % dElem + 1;
 
 	return std::move(Tree(vect));
 }
@@ -24,7 +23,6 @@ Tree treesXor(Tree& first, Tree& second) { // result = first xor second
 	for (auto i : second)
 		if (!first.contains(i))
 			result.insert(i);
-
 	return std::move(result);
 }
 
@@ -32,20 +30,20 @@ Tree treesMinus(const Tree& first, const Tree& second) { // result = first / sec
 	auto result = Tree(first);
 	for (auto i : second)
 		result.remove(i);
-
 	return std::move(result);
 }
 
 Tree treesOr(const Tree& first, const Tree& second) { // result = first or second
 	auto result = Tree(first);
-	result.insert(second.begin());
+	result.subst(second.begin());
 	return std::move(result);
 }
 
 int main() {
 	const int maxSize = 15;
+	const int maxDel = 15;
 
-	Tree a, b, c, d, e;
+	Tree À, B, C, D, E;
 	Tree dMinusE;
 	Tree cXorUpper;
 	Tree aOrB;
@@ -53,22 +51,21 @@ int main() {
 
 	srand(time(nullptr));
 
-	a = generateRandomTree(rand() % maxSize + 1);
-	b = generateRandomTree(rand() % maxSize + 1);
-	c = generateRandomTree(rand() % maxSize + 1);
-	d = generateRandomTree(rand() % maxSize + 1);
-	e = generateRandomTree(rand() % maxSize + 1);
+	À = generateRandomTree(rand() % maxSize + 1, maxDel);
+	B = generateRandomTree(rand() % maxSize + 1, maxDel);
+	C = generateRandomTree(rand() % maxSize + 1, maxDel);
+	D = generateRandomTree(rand() % maxSize + 1, maxDel);
+	E = generateRandomTree(rand() % maxSize + 1, maxDel);
 
-	std::cout << "\na\n" << a << "\nb\n" << b << "\nc\n" << c << "\nd\n" << d << "\ne\n" << e << "\n\n";
+	std::cout << "\nA" << À << "\n\nB" << B << "\n\nC" << C << "\n\nD" << D << "\n\nE" << E << "\n\n";
 
-	dMinusE = treesMinus(d, e);
-	std::cout << "d minus e" << dMinusE << "\n\n";
-	cXorUpper = treesXor(c, dMinusE);
-	std::cout << "c xor (d minus e)" << cXorUpper << "\n\n";
-	aOrB = treesOr(a, b);
-	std::cout << "a or b" << aOrB << "\n\n";
+	dMinusE = treesMinus(D, E);
+	std::cout << "D\\E" << dMinusE << "\n\n";
+	cXorUpper = treesXor(C, dMinusE);
+	std::cout << "C XOR D\\E" << cXorUpper << "\n\n";
+	aOrB = treesOr(À, B);
+	std::cout << "A or B" << aOrB << "\n\n";
 	result = treesOr(aOrB, cXorUpper);
-	std::cout << "result" << result << "\n\n";
-
+	std::cout << "Result = A or B or C XOR D\\E" << result << "\n\n";
 	return 0;
 }
