@@ -28,7 +28,7 @@ Tree treesXor(Tree& first, Tree& second) { // result = first xor second
 	return std::move(result);
 }
 
-Tree treesExclude(const Tree& first, const Tree& second) { // result = first / second
+Tree treesMinus(const Tree& first, const Tree& second) { // result = first / second
 	auto result = Tree(first);
 	for (auto i : second)
 		result.remove(i);
@@ -43,34 +43,32 @@ Tree treesOr(const Tree& first, const Tree& second) { // result = first or secon
 }
 
 int main() {
-	auto vect = std::vector<int>({ 5, 7, 12, 19, 24, 31, 40, 53, 68, 75, 84, 91 });
-	auto vect1 = std::vector<int>({5, 12, 21, 657, 11224});
-	auto tree = Tree(vect);
+	const int maxSize = 15;
 
-	//Тест subst
-	/*std::cout << "\n" << tree << "\n\n";
-	auto ntree = Tree(vect);
-	auto treesubst = tree;
-	treesubst.insert(ntree.begin() + 3);
-	std::cout << "\n" << treesubst << "\n\n";*/
+	Tree a, b, c, d, e;
+	Tree dMinusE;
+	Tree cXorUpper;
+	Tree aOrB;
+	Tree result;
 
-	//Тест вставки
-	/*for (int i = -10; i <= 100; i += 10) {
-		tree.insert(i);
-		std::cout << "\n" << tree << '\n';
-	}
-	std::cout << "\n" << tree << "\n\n";*/
+	srand(time(nullptr));
 
-	// Тест инкремента и декремена итератора
-	/*auto iter = tree.begin();
-	for (; iter != tree.end(); ++iter)
-		std::cout << *iter << " ";
-	std::cout << "\n";
-	for (; iter != tree.begin(); --iter)
-		std::cout << *iter << " ";
-	std::cout << *iter << " \n";
-	for (; iter != tree.end(); ++iter)
-		std::cout << *iter << " ";*/
+	a = generateRandomTree(rand() % maxSize + 1);
+	b = generateRandomTree(rand() % maxSize + 1);
+	c = generateRandomTree(rand() % maxSize + 1);
+	d = generateRandomTree(rand() % maxSize + 1);
+	e = generateRandomTree(rand() % maxSize + 1);
+
+	std::cout << "\na\n" << a << "\nb\n" << b << "\nc\n" << c << "\nd\n" << d << "\ne\n" << e << "\n\n";
+
+	dMinusE = treesMinus(d, e);
+	std::cout << "d minus e" << dMinusE << "\n\n";
+	cXorUpper = treesXor(c, dMinusE);
+	std::cout << "c xor (d minus e)" << cXorUpper << "\n\n";
+	aOrB = treesOr(a, b);
+	std::cout << "a or b" << aOrB << "\n\n";
+	result = treesOr(aOrB, cXorUpper);
+	std::cout << "result" << result << "\n\n";
 
 	return 0;
 }
