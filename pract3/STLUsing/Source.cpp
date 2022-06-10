@@ -4,33 +4,31 @@
 #include "Tree.h"
 
 int main() {
-	auto vect = std::vector<int>({ 1, 2, 4, 5, 7, 12, 14, 17, 19, 21, 23, 24, 29, 31, 35, 37, 40, 43, 45, 48, 53, 68, 70, 73, 75, 79, 84, 87, 89, 91, 95, 98, 99});
-	//auto vect = std::vector<int>({ 1, 2});
+	//auto vect = std::vector<int>({ 1, 2, 4, 5, 7, 12, 14, 17, 19, 21, 23, 24, 29, 31, 35, 37, 40, 43, 45, 48, 53, 68, 70, 73, 75, 79, 84, 87, 89, 91, 95, 98, 99});
+	auto vect = std::vector<int>({ 1, 2});
 	auto vect1 = std::vector<int>({ 5, 12 });
 
-	//for (int i = 3; i < 250; i++) vect.push_back(i);
+	for (int i = 3; i < 250; i++) vect.push_back(i);
 	
 	auto tree = Tree(vect);
 
 	//Тест erase
 	std::cout << tree << "\n\n";
 
-	tree.erase(3);
-	std::cout << tree << "\n";
+	/*tree.erase(3);
+	std::cout << tree << "\n";*/
 
-	/*for (int i = 1; i < 150; i++) {// +1 2 4 7    -2 4 5 9
-			tree.erase(tree.begin());  //  tree.end() - 5    tree.begin() + 7
+	/*for (int i = 1; i < 250; i++) {// +1 2 4 7    -2 4 5 9
+			tree.erase(tree.end() - 1);  //  tree.end() - 5    tree.begin() + 7
 			std::cout << tree << "\n";
 	}*/
 
-	/*for (; tree.begin() != tree.end(); tree.erase(tree.begin())) {
+	for (; tree.begin() != tree.end(); tree.erase(tree.begin())) {
 		std::cout << tree << "\n";
-	}*/
+	}
 
 	//tree.erase(tree.begin());
 	//std::cout << tree << "\n";
-
-	
 	
 	//for (auto i : tree) std::cout << i << ' ';
 
