@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <queue>
+#include <algorithm>
 
 #include "Node.h"
 #include "AccessIterator.h"
@@ -12,14 +13,15 @@ using std::vector;
 class Tree {
 protected:
 	Node* root;
+	std::vector<int> sequence;
 
 	AccessIterator insert(AccessIterator, int);
 public:
-	Tree() : root(nullptr) {} ;
-	Tree(const vector<int>&);
+	Tree() : root(nullptr) { sequence = vector<int>(); };
+	Tree(const vector<int>);
 
 	Tree(const Tree&);
-	Tree(Tree&& other) noexcept : root(other.root) { other.root = nullptr; };
+	Tree(Tree&& other) noexcept : root(other.root) { other.root = nullptr; sequence = other.sequence; };
 
 	Tree& operator = (const Tree&);
 	Tree& operator = (Tree&&) noexcept;
@@ -29,7 +31,7 @@ public:
 	AccessIterator begin() {
 		Node* first;
 		for (first = root; first != nullptr && first->down != nullptr; first = first->down);
-		return AccessIterator(root, first); 
+		return AccessIterator(root, first);
 	}
 	AccessIterator end() { return AccessIterator(root, nullptr); }
 
@@ -41,15 +43,23 @@ public:
 	AccessIterator end() const { return AccessIterator(root, nullptr); }
 
 	AccessIterator insert(int);
-	void subst(AccessIterator);
+	Tree subst(Tree&, int);
 
 	void remove(AccessIterator);
 	void remove(int);
 
-	void excl(AccessIterator, AccessIterator);
-	void erase(int, int);
+	Tree excl(Tree&);
+	Tree erase(int, int);
 
-	bool contains(int);
+	bool contains(const std::vector<int>&);
+	bool contains(int what);
+
+	std::ostream& printSequence(std::ostream& stream) {
+		for (auto elem : sequence)
+			stream << elem << " ";
+
+		return stream;
+	}
 
 	friend std::ostream& operator<<(std::ostream& stream, const Tree& tree) {
 		if (tree.root == nullptr)
@@ -67,8 +77,8 @@ public:
 
 		while (!que.empty()) {
 			elem = que.front();
-			if(elem->value == rootValue) std::cout << '\n';
-			
+			if (elem->value == rootValue) std::cout << '\n';
+
 			std::cout << elem->value << " ";
 			std::cout << elem->right->value << " ";
 			if (elem->right->right != nullptr) std::cout << elem->right->right->value << " ";
@@ -76,11 +86,11 @@ public:
 			std::cout << " | ";
 			que.pop();
 
-			if (elem->down != nullptr) 
+			if (elem->down != nullptr)
 				que.push(elem->down);
 			if (elem->right->down != nullptr)
 				que.push(elem->right->down);
-			if (elem->right->right != nullptr &&elem->right->right->down != nullptr)
+			if (elem->right->right != nullptr && elem->right->right->down != nullptr)
 				que.push(elem->right->right->down);
 		}
 		return stream;
@@ -89,9 +99,12 @@ public:
 
 // Принимая на вход остортированный(!) вектор, эта функция строит по нему 2-3 дерево
 // этот алгоритм подробно проиллюстрирован в лекции
-Tree::Tree(const vector<int>& sequence) : root(nullptr) {
+Tree::Tree(vector<int> sequence) : root(nullptr) {
 	if (sequence.empty())
 		return;
+
+	this->sequence = sequence;
+	std::sort(sequence.begin(), sequence.end());
 
 	root = new Node(nullptr, sequence[0]);
 
@@ -149,21 +162,17 @@ Tree::Tree(const vector<int>& sequence) : root(nullptr) {
 }
 
 Tree::Tree(const Tree& other) {
-	std::vector<int> vector;
-	for (auto obj : other)
-		vector.push_back(obj);
+	std::vector<int> vector = other.sequence;
 
 	Tree tmp = Tree(vector);
 	root = tmp.root;
+	sequence = tmp.sequence;
 	tmp.root = nullptr;
 }
 
 Tree& Tree::operator = (const Tree& other) {
 	if (this != &other) {
-		std::vector<int> vector;
-		for (auto obj : other)
-			vector.push_back(obj);
-
+		std::vector<int> vector = other.sequence;
 		Tree tmp = Tree(vector);
 		delete root;
 		root = tmp.root;
@@ -175,6 +184,7 @@ Tree& Tree::operator = (const Tree& other) {
 Tree& Tree::operator = (Tree&& other) noexcept {
 	if (this != &other) {
 		root = other.root;
+		sequence = other.sequence;
 		other.root = nullptr;
 	}
 	return *this;
@@ -225,7 +235,7 @@ AccessIterator Tree::insert(AccessIterator where, int value) {
 		if (nodeStart->parent == nullptr) {
 			Node* underRoot = new Node(nodeStart, nodeStart->value);
 			underRoot->down = nodeStart->down;
-			if(nodeStart->down != nullptr) nodeStart->down->parent = underRoot;
+			if (nodeStart->down != nullptr) nodeStart->down->parent = underRoot;
 			nodeStart->down = underRoot;
 
 			underRoot->right = new Node(underRoot, nodeStart->right->value);
@@ -259,6 +269,7 @@ AccessIterator Tree::insert(AccessIterator where, int value) {
 
 	// Вернём новый итератор, указывающий на ноду из where, так как для навигации итератор хранит в себе
 	// структуру листьев, а она после вставки может быть изменена
+	sequence.push_back(value);
 	return where;
 }
 
@@ -274,18 +285,22 @@ AccessIterator Tree::insert(int value) {
 	}
 	for (; runner->right != nullptr && runner->value < value; runner = runner->right);
 
-	if(runner->value < value)
+	if (runner->value < value)
 		return insert(++AccessIterator(root, runner), value);
-	else if(runner->value != value)
+	else if (runner->value != value)
 		return insert(AccessIterator(root, runner), value);
-}
-
-void Tree::subst(AccessIterator otherStart) {
-	for (; otherStart.currentValue != nullptr; ++otherStart) insert(*otherStart);
 }
 
 void Tree::remove(AccessIterator where) {
 	Node* removable = where.currentValue;
+	if (removable == nullptr) return;
+
+	int i = 0;
+	int size = sequence.size();
+	auto iter = sequence.begin();
+	for (; sequence[i] != removable->value && i < size; ++i, ++iter);
+	if (i != size) sequence.erase(iter);
+
 	if (removable->parent == nullptr) {
 		if (root->right) {
 			root = removable->right;
@@ -752,27 +767,80 @@ void Tree::remove(int value) {
 	}
 }
 
-void Tree::excl(AccessIterator otherStart, AccessIterator otherEnd) {
-	for (auto i = *otherStart; i != *otherEnd; ++i)
-		if (contains(i)) return;
+Tree Tree::excl(Tree& other) {
+	if (contains(other.sequence)) {
+		Tree result = Tree(*this);
+		for (auto i : other.sequence)
+			result.remove(i);
+		return std::move(result);
+	}
+	else return std::move(*this);
 
-	for (auto i = otherStart; i != otherEnd; ++i)
-		remove(i);
 }
 
-void Tree::erase(int from, int to) {
-	if (from < 0 || to - from < 0)
-		return;
+Tree Tree::erase(int from, int to) {
+	if (from < 0 || to < from || sequence.size() < to)
+		throw std::out_of_range("Incorrect bounds");
+
+	Tree result = Tree(*this);
+
+	for (; from != to;)
+		result.remove(sequence[from++]);
+
+
+	return result;
+}
+
+Tree Tree::subst(Tree& other, int fromPos) {
+	std::vector<int> resSequence = std::vector<int>();
 
 	try {
-		for (auto i = begin() + from, j = begin() + to; i != j;)
-			remove(i++);
+		begin() + fromPos;
 	}
 	catch (std::out_of_range e) {
 		throw e;
 	}
+
+	int i = 0;
+	for (; i < fromPos; ++i)
+		resSequence.push_back(sequence[i]);
+
+	for (auto i : other.sequence)
+		resSequence.push_back(i);
+
+	for (auto size = sequence.size(); i < size; ++i)
+		resSequence.push_back(sequence[i]);
+
+	return std::move(Tree(resSequence));
 }
 
+bool Tree::contains(const std::vector<int>& subseq) {
+	int thisSize = sequence.size();
+	int otherSize = subseq.size();
+	int ctr = 1;
+
+	if (subseq.empty()) return true;
+	if (sequence.empty()) return false;
+
+	int runner = 0;
+
+	for (; runner < thisSize && sequence[runner] != subseq[0];) {
+		if (sequence[runner] == subseq[0])
+			--runner;
+		++runner;
+	}
+
+	for (int i = 1; i < otherSize && runner < thisSize; ++i)
+		if (sequence[++runner] != subseq[i])
+			return false;
+		else ctr++;
+
+	if (ctr != otherSize)
+		return false;
+
+	return true;
+
+}
 
 bool Tree::contains(int what) {
 	auto runner = root;

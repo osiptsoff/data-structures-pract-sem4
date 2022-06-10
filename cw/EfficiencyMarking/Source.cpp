@@ -32,7 +32,10 @@ Tree treesMinus(const Tree& first, const Tree& second) { // result = first / sec
 
 Tree treesOr(const Tree& first, const Tree& second) { // result = first or second
 	auto result = Tree(first);
-	result.subst(second.begin());
+
+	for (auto i : second)
+		result.insert(i);
+
 	return std::move(result);
 }
 
@@ -64,6 +67,10 @@ int main() {
 	//srand(time(nullptr));
 
 	for (int size = minSize, i = 1; size <= maxSize; size += sizeStep, i++) {
+		Tree tree1 = generateRandomTree(size, maxDel);
+		Tree tree2 = generateRandomTree(size, maxDel);
+		Tree res;
+
 		A = generateRandomTree(size, maxDel);
 		B = generateRandomTree(size, maxDel);
 		C = generateRandomTree(size, maxDel);
@@ -71,9 +78,35 @@ int main() {
 		E = generateRandomTree(size, maxDel);
 
 		std::cout << "Test " << i << "\n";
-		if (debugMode) std::cout << "\n\nA" << A << "\n\nB" << B << "\n\nC" << C << "\n\nD" << D << "\n\nE" << E << "\n\n";
-		
+
 		auto start = std::chrono::high_resolution_clock::now();
+
+		if (debugMode) {
+			std::cout << "\n\ntree 1:" << tree1 << "\nSequence tree 1: ";
+			tree1.printSequence(std::cout);
+			std::cout << "\n\ntree 2:" << tree2 << "\nSequence tree 2: ";
+			tree2.printSequence(std::cout);
+		}
+
+		res = tree1.subst(tree2, 3);
+		if (debugMode) {
+			std::cout << "\n\nSubst tree1 in tree2 from 3 pos result:" << res << "\nSubst result tree: ";
+			res.printSequence(std::cout);
+		}
+
+		res = tree1.excl(tree2);
+		if (debugMode) {
+			std::cout << "\n\nExcl tree1 from tree2 result :" << res << "\nExcl result tree: ";
+			res.printSequence(std::cout);
+		}
+
+		res = tree1.erase(2, 10);
+		if (debugMode) {
+			std::cout << "\n\nErase tree1 from 2 to 10 result:" << res << "\nErase result tree: ";
+			res.printSequence(std::cout);
+		}
+		
+		if (debugMode) std::cout << "\n\nA" << A << "\n\nB" << B << "\n\nC" << C << "\n\nD" << D << "\n\nE" << E << "\n\n";
 
 		dMinusE = treesMinus(D, E);
 		if (debugMode) std::cout << "D\\E" << dMinusE << "\n\n";

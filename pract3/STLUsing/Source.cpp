@@ -35,7 +35,10 @@ Tree treesMinus(const Tree& first, const Tree& second) { // result = first / sec
 
 Tree treesOr(const Tree& first, const Tree& second) { // result = first or second
 	auto result = Tree(first);
-	result.subst(second.begin());
+	
+	for (auto i : second)
+		result.insert(i);
+
 	return std::move(result);
 }
 
@@ -54,17 +57,21 @@ int main() {
 	Tree tree1 = generateRandomTree(rand() % maxSize + 1, maxDel);
 	Tree tree2 = generateRandomTree(rand() % maxSize + 1, maxDel);
 
-	std::cout << "\ntree 1:\n" << tree1 << std::endl;
-	std::cout << "\ntree 2:\n" << tree2 << std::endl;
+	std::cout << "\n\ntree 1:" << tree1 << "\nSequence tree 1: ";
+	tree1.printSequence(std::cout);
+	std::cout << "\n\ntree 2:" << tree2 << "\nSequence tree 2: ";
+	tree2.printSequence(std::cout);
 	
-	tree1.subst(tree2.begin() + 3);
-	std::cout << "\nSubst tree1 in tree2 from 3 pos result:\n" << tree1 << std::endl;
-	
-	tree1.excl(tree2.begin(), tree2.end() - 2);
-	std::cout << "\nExcl tree1 from tree2 result :\n" << tree1 << std::endl;
+	Tree res;
 
-	tree1.erase(2, 10);
-	std::cout << "\nErase tree1 from 2 to 10 result:\n" << tree1 << std::endl;
+	std::cout << "\n\nSubst tree1 in tree2 from 3 pos result:" << (res = tree1.subst(tree2, 3)) << "\nSubst result tree: ";
+	res.printSequence(std::cout);
+	
+	std::cout << "\n\nExcl tree1 from tree2 result :" << (res = tree1.excl(tree2)) << "\nExcl result tree: ";
+	res.printSequence(std::cout);
+
+	std::cout << "\n\nErase tree1 from 2 to 10 result:" << (res = tree1.erase(2, 10)) << "\nErase result tree: ";
+	res.printSequence(std::cout);
 
 
 	À = generateRandomTree(rand() % maxSize + 1, maxDel);
