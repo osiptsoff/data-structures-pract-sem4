@@ -43,6 +43,7 @@ public:
 	AccessIterator insert(int);
 	void insert(AccessIterator); // функция subst
 
+	void erase(int);
 	void erase(AccessIterator);
 
 	friend std::ostream& operator<<(std::ostream& stream, const Tree& tree) {
@@ -282,9 +283,8 @@ void Tree::insert(AccessIterator otherStart) {
 
 void Tree::erase(AccessIterator where) {
 	Node* removable = where.currentValue;
-	if (!root) std::cout << "Not erase. Empty tree.\n";
-	//else if (!removable) std::cout << "Not erase. Empty node.\n";
-	else if (removable->parent == nullptr) {
+	//if (!root) std::cout << "Not erase. Empty tree.\n";
+	if (removable->parent == nullptr) {
 		std::cout << "\nWork with root\n";
 
 		if (root->right) {
@@ -320,7 +320,6 @@ void Tree::erase(AccessIterator where) {
 		if (removable->right) removable->right = nullptr;
 		delete removable;
 
-		if (runner->right) std::cout << std::endl << "Runner r = " << runner->right->value;
 		// Перестройка дерева, если необходимо
 		if (runner->down && runner->value == runner->down->value) runner = runner->down;
 		else if (runner->parent != nullptr && runner->parent->down == nullptr && runner->parent->parent && runner->parent->value == runner->parent->parent->value) runner = runner->parent;
@@ -328,7 +327,6 @@ void Tree::erase(AccessIterator where) {
 
 		n = 1;
 		for (; runner->right != nullptr; runner = runner->right) ++n; // Считаем, сколько чисел в узле
-		std::cout << std::endl << "Now nodes " << n << std::endl;
 		if (n == 1) { // остался один лист
 			std::cout << "One son\n";
 			removable = runner;
@@ -826,5 +824,18 @@ void Tree::erase(AccessIterator where) {
 				}
 			} while (n == 1);
 		}
+	}
+}
+
+void Tree::erase(int value) {
+	if (root != nullptr){
+		auto runner = root;
+		while (runner->down != nullptr) {
+			for (; runner->right != nullptr && runner->right->value <= value; runner = runner->right);
+			runner = runner->down;
+		}
+		for (; runner->right != nullptr && runner->value < value; runner = runner->right);
+
+		if (runner->value == value) erase(AccessIterator(root, runner));
 	}
 }
